@@ -9,9 +9,9 @@ const RootLayout = ({ children }: Props) => {
     return (
         <div className="min-h-screen flex flex-col">
             <Header />
-
-            <main className="flex flex-col items-center py-8">{children}</main>
-
+            <main className="flex flex-col flex-1 items-center py-8">
+                {children}
+            </main>
             <Footer />
         </div>
     );

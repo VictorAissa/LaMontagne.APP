@@ -53,8 +53,10 @@ const Login = () => {
         try {
             const response = await fetch(`${API_URL}/api/user/login`, {
                 method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
+                    Accept: 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
