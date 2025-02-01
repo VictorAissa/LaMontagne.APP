@@ -1,11 +1,5 @@
-
-
 const Footer = () => {
-    return (
-        <footer className="bg-white border-t">
-            Footer
-        </footer>
-    )
-}
+    return <footer className="bg-white">Footer</footer>;
+};
 
-export default Footer
+export default Footer;

@@ -1,11 +1,5 @@
-
-
 const Header = () => {
-    return (
-        <header className="sticky top-0 bg-white border-b">
-            Header
-        </header>
-    )
-}
+    return <header className="sticky top-0 ">Header</header>;
+};
 
-export default Header
+export default Header;
