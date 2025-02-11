@@ -71,11 +71,4 @@ export class Journey {
         };
         this.miscellaneous = data.miscellaneous || '';
     }
-
-    toJSON() {
-        return {
-            ...this,
-            date: this.date.toISOString()
-        };
-    }
 }

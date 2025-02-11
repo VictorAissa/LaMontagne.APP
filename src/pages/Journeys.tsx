@@ -9,19 +9,26 @@ import {
     setStatus,
     setError,
 } from '@/store/features/journeySlice';
+import JourneyCard from '@/components/JourneyCard';
+import { journeyAdapter } from '@/adapters/journeyAdapter';
 
 const Journeys = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const journeys = useSelector((state: RootState) => state.journey.journeys);
+    const journeys = useSelector((state: RootState) => 
+        state.journey.journeys?.map(journey => journeyAdapter.fromJSON(journey)) || []
+    );
     const status = useSelector((state: RootState) => state.journey.status);
     const error = useSelector((state: RootState) => state.journey.error);
     const dateRange = useSelector(
         (state: RootState) => state.filters.dateRange
     );
-
+    const userId = useSelector((state: RootState) => state.auth.userId);
     const season = useSelector((state: RootState) => state.filters.season);
+    const token = useSelector((state: RootState) => state.auth.token);
+
+    const API_URL: ImportMetaEnv = import.meta.env.VITE_API_URL;
 
     const filteredJourneys = useMemo(() => {
         if (!journeys) return [];
@@ -48,15 +55,24 @@ const Journeys = () => {
         const fetchJourneys = async () => {
             dispatch(setStatus('loading'));
             try {
-                const response = await fetch('/api/journeys');
+                const response = await fetch(
+                    `${API_URL}/api/journey/user/${userId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 if (!response.ok) throw new Error('Failed to fetch journeys');
                 const data = await response.json();
-                const journeys = data.map(
+                /*                 const journeys = data.map(
                     (journey: Partial<Journey>) => new Journey(journey)
-                );
+                ); */
 
-                dispatch(setJourneys(journeys));
+                dispatch(setJourneys(data));
                 dispatch(setStatus('succeeded'));
+                console.log(data);
             } catch (error) {
                 dispatch(setError(error.message));
                 dispatch(setStatus('failed'));
@@ -64,17 +80,7 @@ const Journeys = () => {
         };
 
         fetchJourneys();
-    }, [dispatch]);
-
-    /*     if (status === 'loading') {
-        return <div>Chargement...</div>;
-    }
-
-    if (status === 'failed') {
-        return (
-            <div className="text-red-500">Erreur{error && `: ${error}`}</div>
-        ); // message composant
-    } */
+    }, [API_URL, dispatch, userId]);
 
     return (
         <div className="container mx-auto">
@@ -88,40 +94,17 @@ const Journeys = () => {
                         Erreur{error && `: ${error}`}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filteredJourneys.map((journey) => (
+                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 px-6 [column-fill:_balance] space-y-4">
+                        {filteredJourneys.map((journey, index) => (
                             <div
                                 key={journey.id}
-                                className="p-4 border rounded-lg shadow-sm"
+                                className="break-inside-avoid mb-4"
                             >
-                                <h3 className="font-semibold">
-                                    {journey.title}
-                                </h3>
-                                <p>
-                                    {new Date(
-                                        journey.date
-                                    ).toLocaleDateString()}
-                                </p>
-                                <p>{journey.season}</p>
-                                {/* Ajoute d'autres infos que tu veux afficher */}
+                                <JourneyCard index={index} journey={journey} />
                             </div>
                         ))}
                     </div>
                 )}
-                {/* Affichage des journeys filtrés */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredJourneys.map((journey) => (
-                        <div
-                            key={journey.id}
-                            className="p-4 border rounded-lg shadow-sm"
-                        >
-                            <h3 className="font-semibold">{journey.title}</h3>
-                            <p>{new Date(journey.date).toLocaleDateString()}</p>
-                            <p>{journey.season}</p>
-                            {/* Ajoute d'autres infos que tu veux afficher */}
-                        </div>
-                    ))}
-                </div>
             </div>
         </div>
     );

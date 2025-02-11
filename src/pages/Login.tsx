@@ -90,7 +90,7 @@ const Login = () => {
     return (
         <Card className="w-[350px]">
             <CardHeader>
-                <CardTitle>Login</CardTitle>
+                <CardTitle className='text-xl'>Login</CardTitle>
                 <CardDescription>Allez tu peux te connecter</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">

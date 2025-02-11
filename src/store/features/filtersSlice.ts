@@ -1,6 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DateRange } from "react-day-picker";
-import { addDays } from 'date-fns';
 
 interface SerializableDateRange {
     from: string | undefined;  // ISO
