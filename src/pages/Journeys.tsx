@@ -1,8 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import JourneyFiltersProps from '@/components/JourneyFilters';
-import { Journey } from '@/types/Journey';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { RootState } from '@/store/store';
 import {
     setJourneys,
@@ -11,13 +9,16 @@ import {
 } from '@/store/features/journeySlice';
 import JourneyCard from '@/components/JourneyCard';
 import { journeyAdapter } from '@/adapters/journeyAdapter';
+import { Journey } from '@/types/Journey';
 
 const Journeys = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
-    const journeys = useSelector((state: RootState) => 
-        state.journey.journeys?.map(journey => journeyAdapter.fromJSON(journey)) || []
+    const journeys = useSelector(
+        (state: RootState) =>
+            state.journey.journeys?.map((journey) =>
+                journeyAdapter.fromJSON(journey)
+            ) || []
     );
     const status = useSelector((state: RootState) => state.journey.status);
     const error = useSelector((state: RootState) => state.journey.error);
@@ -66,11 +67,12 @@ const Journeys = () => {
                 );
                 if (!response.ok) throw new Error('Failed to fetch journeys');
                 const data = await response.json();
-                /*                 const journeys = data.map(
-                    (journey: Partial<Journey>) => new Journey(journey)
-                ); */
 
-                dispatch(setJourneys(data));
+                const deserializedJourneys = data.map((journey: Journey) =>
+                    journeyAdapter.toJSON(journey)
+                );
+
+                dispatch(setJourneys(deserializedJourneys));
                 dispatch(setStatus('succeeded'));
                 console.log(data);
             } catch (error) {

@@ -1,6 +1,11 @@
 import { Journey } from '@/types/Journey';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { useEffect, useState } from 'react';
+import { getBackgroundImage, getMountainImages } from '@/utils/image';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setCurrentJourney } from '@/store/features/journeySlice';
+import { journeyAdapter } from '@/adapters/journeyAdapter';
 
 interface Props {
     index: number;
@@ -8,6 +13,8 @@ interface Props {
 }
 
 const JourneyCard = (props: Props) => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
     const [cardHeight, setCardHeight] = useState('');
 
@@ -16,33 +23,37 @@ const JourneyCard = (props: Props) => {
         return heights[index % heights.length];
     };
 
+    const handleCardClick = () => {
+        dispatch(setCurrentJourney(journeyAdapter.toJSON(props.journey)));
+        navigate(`/journeys/${props.journey.id}`);
+    };
+
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 640;
             setIsMobile(mobile);
-            setCardHeight(mobile ? 'aspect-[4/3]' : getHeight(props.index));
+            setCardHeight(mobile ? 'aspect-[5/3]' : getHeight(props.index));
         };
 
-        // Initial calculation
         handleResize();
 
-        // Add event listener
         window.addEventListener('resize', handleResize);
 
-        // Cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, [props.index]);
 
     return (
         <Card
             className={`group relative overflow-hidden cursor-pointer ${cardHeight}`}
+            onClick={handleCardClick}
         >
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat transform group-hover:scale-110 transition-transform duration-300 ease-in-out"
                 style={{
-                    backgroundImage: props.journey.pictures?.[0]
-                        ? `url(${props.journey.pictures[0]})`
-                        : 'url(/api/placeholder/400/300)',
+                    backgroundImage: getBackgroundImage(
+                        props.journey,
+                        props.index
+                    ),
                 }}
             />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />

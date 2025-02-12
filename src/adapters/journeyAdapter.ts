@@ -1,16 +1,17 @@
 import { Journey } from "@/types/Journey";
 
 export const journeyAdapter = {
-    toJSON(journey: Journey) {
+  toJSON(journey: Journey): Journey {
       return {
-        ...journey,
-        date: journey.date instanceof Date ? journey.date.toISOString() : journey.date
+          ...journey,
+          date: journey.date instanceof Date ? journey.date.toISOString() : journey.date
       };
-    },
-  
-    fromJSON(data:  Partial<Journey>): Journey {
-      return new Journey({
-        ...data,
-        date: data.date ? new Date(data.date) : new Date()      });
-    }
-  };
+  },
+
+  fromJSON(data: Journey): Journey {
+      return {
+          ...data,
+          date: new Date(data.date)
+      };
+  }
+};
