@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setCurrentJourney } from '@/store/features/journeySlice';
 import { journeyAdapter } from '@/adapters/journeyAdapter';
+import { useAppDispatch } from '@/store/hooks';
 
 interface Props {
     index: number;
@@ -14,7 +15,7 @@ interface Props {
 
 const JourneyCard = (props: Props) => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
     const [cardHeight, setCardHeight] = useState('');
 

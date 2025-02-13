@@ -1,4 +1,3 @@
-// src/store/store.ts
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from './auth/authSlice'
 import journeyReducer from './features/journeySlice'

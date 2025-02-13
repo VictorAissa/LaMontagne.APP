@@ -2,32 +2,34 @@ import { useEffect, useMemo } from 'react';
 import JourneyFiltersProps from '@/components/JourneyFilters';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     setJourneys,
     setStatus,
     setError,
+    fetchUserJourneys,
 } from '@/store/features/journeySlice';
 import JourneyCard from '@/components/JourneyCard';
 import { journeyAdapter } from '@/adapters/journeyAdapter';
 import { Journey } from '@/types/Journey';
 
 const Journeys = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
-    const journeys = useSelector(
+    const journeys = useAppSelector(
         (state: RootState) =>
             state.journey.journeys?.map((journey) =>
                 journeyAdapter.fromJSON(journey)
             ) || []
     );
-    const status = useSelector((state: RootState) => state.journey.status);
-    const error = useSelector((state: RootState) => state.journey.error);
-    const dateRange = useSelector(
+    const status = useAppSelector((state: RootState) => state.journey.status);
+    const error = useAppSelector((state: RootState) => state.journey.error);
+    const dateRange = useAppSelector(
         (state: RootState) => state.filters.dateRange
     );
-    const userId = useSelector((state: RootState) => state.auth.userId);
-    const season = useSelector((state: RootState) => state.filters.season);
-    const token = useSelector((state: RootState) => state.auth.token);
+    const userId = useAppSelector((state: RootState) => state.auth.userId);
+    const season = useAppSelector((state: RootState) => state.filters.season);
+    const token = useAppSelector((state: RootState) => state.auth.token);
 
     const API_URL: ImportMetaEnv = import.meta.env.VITE_API_URL;
 
@@ -53,35 +55,9 @@ const Journeys = () => {
     }, [journeys, dateRange, season]);
 
     useEffect(() => {
-        const fetchJourneys = async () => {
-            dispatch(setStatus('loading'));
-            try {
-                const response = await fetch(
-                    `${API_URL}/api/journey/user/${userId}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-                if (!response.ok) throw new Error('Failed to fetch journeys');
-                const data = await response.json();
-
-                const deserializedJourneys = data.map((journey: Journey) =>
-                    journeyAdapter.toJSON(journey)
-                );
-
-                dispatch(setJourneys(deserializedJourneys));
-                dispatch(setStatus('succeeded'));
-                console.log(data);
-            } catch (error) {
-                dispatch(setError(error.message));
-                dispatch(setStatus('failed'));
-            }
-        };
-
-        fetchJourneys();
+        if (userId) {
+            dispatch(fetchUserJourneys(userId));
+        }
     }, [API_URL, dispatch, userId]);
 
     return (
