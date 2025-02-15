@@ -25,4 +25,14 @@ const getBackgroundImage = (journey: Journey | null | undefined, index: number) 
     return `url(${journey.pictures[0]})`;
 };
 
-export { getMountainImages, getBackgroundImage };
+const avatarImages = import.meta.glob('/public/animals/*.{png,jpg,jpeg}', {
+    eager: true,
+    as: 'url'
+});
+
+const getAvatarImage = (index: number): string => {
+    const images = Object.values(avatarImages);
+    return images[index % images.length];
+};
+
+export { getMountainImages, getBackgroundImage, getAvatarImage };
