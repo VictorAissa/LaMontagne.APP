@@ -1,100 +1,153 @@
-import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import { useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-gpx';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup,
+    LayersControl,
+} from 'react-leaflet';
+import L from 'leaflet';
+import startIcon from '@/assets/icons/topo/from_point.png';
+import endIcon from '@/assets/icons/topo/to_point.png';
+import * as toGeoJSON from '@tmcw/togeojson';
+import { GeoJSON } from 'react-leaflet/GeoJSON';
 
-interface JourneyMapProps {
-    start: { lat: number; long: number };
-    end: { lat: number; long: number };
+interface GeoPoint {
+    latitude: number;
+    longitude: number;
+}
+
+interface Props {
+    start?: GeoPoint;
+    end?: GeoPoint;
     gpxUrl?: string;
 }
 
-// Composant pour gérer la logique GPX et le centrage
-const MapController = ({ start, end, gpxUrl }: JourneyMapProps) => {
-    const map = useMap();
-    const gpxLayerRef = useRef<any>(null);
+const JourneyMap = ({ start, end, gpxUrl }: Props) => {
+    const [geoJsonData, setGeoJsonData] = useState<any>(null);
+    const defaultCenter: [number, number] = [45.900002, 6.11667];
+
+    const customStartIcon = new L.Icon({
+        iconUrl: startIcon,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -34],
+    });
+
+    const customEndIcon = new L.Icon({
+        iconUrl: endIcon,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -34],
+    });
+
+    const toLeafletLatLng = (point?: GeoPoint): [number, number] => {
+        if (
+            !point?.latitude ||
+            !point?.longitude ||
+            isNaN(point.latitude) ||
+            isNaN(point.longitude)
+        ) {
+            return defaultCenter;
+        }
+        return [point.latitude, point.longitude];
+    };
+
+    const geoJsonStyle = {
+        color: '#000',
+        weight: 3,
+        opacity: 0.8,
+    };
 
     useEffect(() => {
-        // Centrage de la carte
-        const bounds = L.latLngBounds([
-            [start.lat, start.long],
-            [end.lat, end.long],
-        ]);
-        map.fitBounds(bounds, { padding: [50, 50] });
-
-        // Chargement GPX
         if (gpxUrl) {
-            const fetchGpx = async () => {
-                try {
-                    const response = await fetch(gpxUrl);
-                    const gpxData = await response.text();
-
-                    if (gpxLayerRef.current) {
-                        gpxLayerRef.current.remove();
-                    }
-
-                    gpxLayerRef.current = new (L as any).GPX(gpxData, {
-                        async: true,
-                        polyline_options: {
-                            color: '#3B82F6',
-                            weight: 3,
-                            opacity: 0.7,
-                        },
-                    }).addTo(map);
-                } catch (error) {
-                    console.error('Erreur chargement GPX:', error);
-                }
-            };
-
-            fetchGpx();
+            fetch(gpxUrl)
+                .then((response) => response.text())
+                .then((gpxString) => {
+                    const parser = new DOMParser();
+                    const gpxDoc = parser.parseFromString(
+                        gpxString,
+                        'text/xml'
+                    );
+                    const geoJson = toGeoJSON.gpx(gpxDoc);
+                    setGeoJsonData(geoJson);
+                })
+                .catch((error) =>
+                    console.error('Erreur chargement GPX:', error)
+                );
         }
+    }, [gpxUrl]);
 
-        return () => {
-            if (gpxLayerRef.current) {
-                gpxLayerRef.current.remove();
-            }
-        };
-    }, [map, start, end, gpxUrl]);
-
-    return null;
-};
-
-// Fix des icônes Leaflet
-const DefaultIcon = L.icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    iconRetinaUrl:
-        'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
-L.Marker.prototype.options.icon = DefaultIcon;
-
-const JourneyMap = ({ start, end, gpxUrl }: JourneyMapProps) => {
     return (
-        <div className="w-full h-[400px] rounded-lg overflow-hidden">
-            <MapContainer
-                center={[start.lat, start.long]}
-                zoom={13}
-                className="w-full h-full"
-            >
-                <TileLayer
-                    url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-                    attribution="&copy; OpenTopoMap"
-                />
+        <MapContainer
+            center={toLeafletLatLng(start)}
+            zoom={13}
+            className="h-full w-full"
+            //scrollWheelZoom={isLargeScreen}
+        >
+            <LayersControl position="topright">
+                {/* OpenTopoMap */}
+                <LayersControl.BaseLayer checked name="OpenTopo">
+                    <TileLayer
+                        url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+                        attribution="Map data: &copy; OpenTopoMap (CC-BY-SA)"
+                        maxZoom={17}
+                    />
+                </LayersControl.BaseLayer>
 
-                <MapController start={start} end={end} gpxUrl={gpxUrl} />
+                {/* IGN Plan*/}
+                <LayersControl.BaseLayer name="IGN-Plan">
+                    <TileLayer
+                        url="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+                        attribution="&copy; IGN France"
+                        maxZoom={19}
+                    />
+                </LayersControl.BaseLayer>
 
-                <Marker position={[start.lat, start.long]}>
-                    <Popup>Point de départ</Popup>
+                {/* IGN Satellite*/}
+                <LayersControl.BaseLayer name="IGN-Sat">
+                    <TileLayer
+                        url="https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+                        attribution="&copy; IGN France"
+                        maxZoom={19}
+                    />
+                </LayersControl.BaseLayer>
+
+                {/* SwissTopo */}
+                <LayersControl.BaseLayer name="SwissTopo">
+                    <TileLayer
+                        url="https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg"
+                        attribution="&copy; SwissTopo"
+                        maxZoom={18}
+                    />
+                </LayersControl.BaseLayer>
+
+                {/* Base OpenStreetMap */}
+                <LayersControl.BaseLayer name="OpenStreet">
+                    <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    />
+                </LayersControl.BaseLayer>
+            </LayersControl>
+
+            {start && (
+                <Marker
+                    position={toLeafletLatLng(start)}
+                    icon={customStartIcon}
+                >
+                    <Popup>Départ</Popup>
                 </Marker>
-
-                <Marker position={[end.lat, end.long]}>
-                    <Popup>Point d'arrivée</Popup>
+            )}
+            {end && (
+                <Marker position={toLeafletLatLng(end)} icon={customEndIcon}>
+                    <Popup>Arrivée</Popup>
                 </Marker>
-            </MapContainer>
-        </div>
+            )}
+
+            {geoJsonData && <GeoJSON data={geoJsonData} style={geoJsonStyle} />}
+        </MapContainer>
     );
 };
 

@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import JourneyMembers from '@/components/JourneyMembers';
 import JourneyCarousel from '@/components/JourneyCarousel';
 import JourneyMap from '@/components/JourneyMap';
+import SectionTitle from '@/components/SectionTitle';
 
 const JourneyDetails = () => {
     const dispatch = useAppDispatch();
@@ -17,8 +18,10 @@ const JourneyDetails = () => {
     const journey = useAppSelector(
         (state: RootState) => state.journey.currentJourney
     );
+    const isLoading = !journey || (id && journey.id !== id);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         if (id && (!journey || journey.id !== id)) {
             dispatch(fetchJourneyById(id));
         }
@@ -66,23 +69,18 @@ const JourneyDetails = () => {
                 </div>
             )}
             <JourneyMembers members={journey?.members || ['toto', 'titi']} />
-            {/*             <div className="py-12">
-                <JourneyMap
-                    start={
-                        journey?.itinerary?.start || {
-                            lat: 45.900002,
-                            long: 6.11667,
-                        }
-                    }
-                    end={
-                        journey?.itinerary?.end || {
-                            lat: 45.900002,
-                            long: 6.11667,
-                        }
-                    }
-                    gpxUrl={journey?.itinerary.gpxId}
-                />
-            </div> */}
+            <div className="py-12 md:py-20 ">
+                <SectionTitle content={'Topo'} />
+                <div className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-md overflow-hidden">
+                    {!isLoading && (
+                        <JourneyMap
+                            start={journey.itinerary?.start}
+                            end={journey.itinerary?.end}
+                            gpxUrl={journey.itinerary?.gpx}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

@@ -6,9 +6,9 @@ export class Journey {
     members: string[];
     pictures: string[];
     itinerary: {
-        start: { lat: number; long: number };
-        end: { lat: number; long: number };
-        gpxId: string;
+        start: { latitude: number; longitude: number };
+        end: { latitude: number; longitude: number };
+        gpx: string;
     };
     altitudes: {
         max: number;
@@ -38,9 +38,9 @@ export class Journey {
         this.members = data.members || [];
         this.pictures = data.pictures || [];
         this.itinerary = {
-            start: data.itinerary?.start || { lat: 0, long: 0 },
-            end: data.itinerary?.end || { lat: 0, long: 0 },
-            gpxId: data.itinerary?.gpxId || ''
+            start: data.itinerary?.start || { latitude: 0, longitude: 0 },
+            end: data.itinerary?.end || { latitude: 0, longitude: 0 },
+            gpx: data.itinerary?.gpx || ''
         };
         this.altitudes = {
             max: data.altitudes?.max || 0,
