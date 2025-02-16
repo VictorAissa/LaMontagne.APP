@@ -66,23 +66,23 @@ const JourneyDetails = () => {
                 </div>
             )}
             <JourneyMembers members={journey?.members || ['toto', 'titi']} />
-            <div className="py-12">
+            {/*             <div className="py-12">
                 <JourneyMap
                     start={
-                        journey?.itinerary.start || {
+                        journey?.itinerary?.start || {
                             lat: 45.900002,
                             long: 6.11667,
                         }
                     }
                     end={
-                        journey?.itinerary.end || {
+                        journey?.itinerary?.end || {
                             lat: 45.900002,
                             long: 6.11667,
                         }
                     }
                     gpxUrl={journey?.itinerary.gpxId}
                 />
-            </div>
+            </div> */}
         </div>
     );
 };
