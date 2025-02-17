@@ -72,3 +72,32 @@ export class Journey {
         this.miscellaneous = data.miscellaneous || '';
     }
 }
+
+export class Protections {
+    ropes: Array<Rope>;
+    nuts: number;
+    cams: number[];
+    screws: number;
+
+    constructor(ropes: Array<Rope> = [new Rope()],
+        nuts: number = 0,
+        cams: Array<number> = [0],
+        screws: number = 0) {
+            this.ropes = ropes;
+            this.nuts = nuts;
+            this.cams = cams;
+            this.screws = screws;
+    }
+};
+
+export class Rope {
+    diameter: number;
+    length: number;
+
+    constructor(diameter: number = 0, length: number = 0) {
+        this.diameter = diameter;
+        this.length = length;
+    }
+
+    
+}

@@ -11,6 +11,7 @@ import JourneyMembers from '@/components/JourneyMembers';
 import JourneyCarousel from '@/components/JourneyCarousel';
 import JourneyMap from '@/components/JourneyMap';
 import SectionTitle from '@/components/SectionTitle';
+import ProtectionsSection from '@/components/ProtectionsSection';
 
 const JourneyDetails = () => {
     const dispatch = useAppDispatch();
@@ -29,7 +30,7 @@ const JourneyDetails = () => {
 
     return (
         <div className="flex flex-col w-full px-6 md:px-12 lg:px-24">
-            <div className="flex flex-col h-60 justify-center gap-7">
+            <div className="flex flex-col h-60 justify-center gap-10 md:gap-14 ">
                 <h1 className="flex w-full justify-center text-5xl">
                     {journey?.title ?? 'La course'}
                 </h1>
@@ -60,7 +61,7 @@ const JourneyDetails = () => {
                 </div>
             </div>
             {journey?.pictures?.length && journey.pictures.length > 0 ? (
-                <div className="w-full py-8 md:py-14 lg:py-24">
+                <div className="w-full py-10 md:py-16 lg:py-24">
                     <JourneyCarousel journey={journey} />
                 </div>
             ) : (
@@ -68,9 +69,13 @@ const JourneyDetails = () => {
                     😔 Pas de photos pour l'instant ...
                 </div>
             )}
-            <JourneyMembers members={journey?.members || ['toto', 'titi']} />
-            <div className="py-12 md:py-20 ">
-                <SectionTitle content={'Topo'} />
+            <div className="w-full py-10 md:py-16">
+                <JourneyMembers
+                    members={journey?.members || ['toto', 'titi']}
+                />
+            </div>
+            <div className="py-10 md:py-16">
+                <SectionTitle content="Topo" />
                 <div className="w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-md overflow-hidden">
                     {!isLoading && (
                         <JourneyMap
@@ -80,6 +85,12 @@ const JourneyDetails = () => {
                         />
                     )}
                 </div>
+            </div>
+            <div className="w-full py-10 md:py-16">
+                <SectionTitle content="Protections" />
+                {!isLoading && (
+                    <ProtectionsSection protections={journey.protections} />
+                )}
             </div>
         </div>
     );

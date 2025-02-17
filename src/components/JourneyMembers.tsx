@@ -48,7 +48,7 @@ const JourneyMembers = ({ members }: JourneyMembersProps) => {
     }, [members]);
 
     return (
-        <section ref={membersRef} className="w-full py-12">
+        <section ref={membersRef} className="w-full">
             <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                 {members?.map((member, index) => (
                     <div
