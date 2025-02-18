@@ -1,6 +1,6 @@
 import { RootState } from '@/store/store';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import snowflake from '@/assets/icons/season/snowflake.png';
 import sun from '@/assets/icons/season/sun.png';
 import arrow_top from '@/assets/icons/arrow_top.png';
@@ -11,10 +11,12 @@ import JourneyMembers from '@/components/JourneyMembers';
 import JourneyCarousel from '@/components/JourneyCarousel';
 import JourneyMap from '@/components/JourneyMap';
 import SectionTitle from '@/components/SectionTitle';
-import ProtectionsSection from '@/components/ProtectionsSection';
+import JourneyProtections from '@/components/JourneyProtections';
+import JourneyMeteo from '@/components/JourneyMeteo';
 
 const JourneyDetails = () => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const journey = useAppSelector(
         (state: RootState) => state.journey.currentJourney
@@ -89,7 +91,19 @@ const JourneyDetails = () => {
             <div className="w-full py-10 md:py-16">
                 <SectionTitle content="Protections" />
                 {!isLoading && (
-                    <ProtectionsSection protections={journey.protections} />
+                    <JourneyProtections protections={journey.protections} />
+                )}
+            </div>
+            <div className="w-full py-10 md:py-16">
+                <SectionTitle content="Météo" />
+                {!isLoading && (
+                    <JourneyMeteo
+                        meteo={journey.meteo}
+                        journeyDate={journey.date}
+                        onUpdateClick={() =>
+                            navigate(`/journey/edit/${journey.id}`)
+                        }
+                    />
                 )}
             </div>
         </div>

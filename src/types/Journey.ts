@@ -1,3 +1,7 @@
+import { Meteo } from "./Meteo";
+import { Protections } from "./Protection";
+import { Itinerary, Altitudes } from "./Topo";
+
 export class Journey {
     id: string;
     title: string;
@@ -5,99 +9,35 @@ export class Journey {
     season: 'SUMMER' | 'WINTER';
     members: string[];
     pictures: string[];
-    itinerary: {
-        start: { latitude: number; longitude: number };
-        end: { latitude: number; longitude: number };
-        gpx: string;
-    };
-    altitudes: {
-        max: number;
-        min: number;
-        total: number;
-    };
-    meteo: {
-        sky: 'SUNNY' | 'PARTLY_CLOUDY' | 'CLOUDY' | 'SNOW' | 'RAIN';
-        temperature: { top: number; bottom: number };
-        iso: { night: number; day: number };
-        wind: { direction: string; speed: number };
-        bera: number;
-    };
-    protections: {
-        ropes: Array<{ diameter: number; length: number }>;
-        nuts: number;
-        cams: number[];
-        screws: number;
-    };
+    itinerary: Itinerary;
+    altitudes: Altitudes;
+    meteo: Meteo;
+    protections: Protections;
     miscellaneous: string;
 
-    constructor(data: Partial<Journey>) {
-        this.id = data.id || '';
-        this.title = data.title || '';
-        this.date = data.date ? new Date(data.date) : new Date();
-        this.season = data.season || 'SUMMER';
-        this.members = data.members || [];
-        this.pictures = data.pictures || [];
-        this.itinerary = {
-            start: data.itinerary?.start || { latitude: 0, longitude: 0 },
-            end: data.itinerary?.end || { latitude: 0, longitude: 0 },
-            gpx: data.itinerary?.gpx || ''
-        };
-        this.altitudes = {
-            max: data.altitudes?.max || 0,
-            min: data.altitudes?.min || 0,
-            total: data.altitudes?.total || 0
-        };
-        this.meteo = {
-            sky: data.meteo?.sky || 'SUNNY',
-            temperature: {
-                top: data.meteo?.temperature?.top || 0,
-                bottom: data.meteo?.temperature?.bottom || 0
-            },
-            iso: {
-                night: data.meteo?.iso?.night || 0,
-                day: data.meteo?.iso?.day || 0
-            },
-            wind: {
-                direction: data.meteo?.wind?.direction || 'N',
-                speed: data.meteo?.wind?.speed || 0
-            },
-            bera: data.meteo?.bera || 1
-        };
-        this.protections = {
-            ropes: data.protections?.ropes || [],
-            nuts: data.protections?.nuts || 0,
-            cams: data.protections?.cams || [],
-            screws: data.protections?.screws || 0
-        };
-        this.miscellaneous = data.miscellaneous || '';
-    }
-}
-
-export class Protections {
-    ropes: Array<Rope>;
-    nuts: number;
-    cams: number[];
-    screws: number;
-
-    constructor(ropes: Array<Rope> = [new Rope()],
-        nuts: number = 0,
-        cams: Array<number> = [0],
-        screws: number = 0) {
-            this.ropes = ropes;
-            this.nuts = nuts;
-            this.cams = cams;
-            this.screws = screws;
-    }
-};
-
-export class Rope {
-    diameter: number;
-    length: number;
-
-    constructor(diameter: number = 0, length: number = 0) {
-        this.diameter = diameter;
-        this.length = length;
+    constructor(data?: Partial<Journey>) {
+        this.id = data?.id || '';
+        this.title = data?.title || '';
+        this.date = data?.date ? new Date(data?.date) : new Date();
+        this.season = data?.season || 'SUMMER';
+        this.members = data?.members || [];
+        this.pictures = data?.pictures || [];
+        this.itinerary = new Itinerary(data?.itinerary);
+        this.altitudes = new Altitudes(data?.altitudes);
+        this.meteo = new Meteo(data?.meteo);
+        this.protections = new Protections(data?.protections);
+        this.miscellaneous = data?.miscellaneous || '';
     }
 
-    
+    isFutureJourney(): boolean {
+        return this.date > new Date();
+    }
+
+    isPastJourney(): boolean {
+        return this.date < new Date();
+    }
+
+    shouldUpdateMeteo(): boolean {
+        return this.isFutureJourney() && this.meteo.shouldUpdateMeteo(this.date);
+    }
 }

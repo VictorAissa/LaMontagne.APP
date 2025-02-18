@@ -1,4 +1,3 @@
-// src/store/slices/journeySlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Journey } from '../../types/Journey';
 import { api } from '@/services/api';
@@ -18,7 +17,6 @@ const initialState: JourneysState = {
     error: null,
 };
 
-// Async thunks
 export const fetchUserJourneys = createAsyncThunk(
     'journey/fetchUserJourneys',
     async (userId: string) => {

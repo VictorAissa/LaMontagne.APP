@@ -1,4 +1,4 @@
-import { Protections } from '@/types/Journey';
+import { Protections } from '@/types/Protection';
 import screw from '@/assets/icons/stuff/ice-screw.png';
 import rope from '@/assets/icons/stuff/rope.png';
 import friend from '@/assets/icons/stuff/spring-loaded-camming-device.png';
@@ -8,7 +8,7 @@ type ProtectionsSectionProps = {
     protections: Protections;
 };
 
-const ProtectionsSection = ({ protections }: ProtectionsSectionProps) => {
+const JourneyProtections = ({ protections }: ProtectionsSectionProps) => {
     return (
         <section className="w-full">
             <div className="flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-20">
@@ -68,4 +68,4 @@ const ProtectionsSection = ({ protections }: ProtectionsSectionProps) => {
     );
 };
 
-export default ProtectionsSection;
+export default JourneyProtections;
