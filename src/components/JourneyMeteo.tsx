@@ -1,4 +1,4 @@
-import { Meteo, Wind as WindData } from '@/types/Meteo';
+import { Meteo } from '@/types/Meteo';
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 

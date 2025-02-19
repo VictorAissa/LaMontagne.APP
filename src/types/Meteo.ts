@@ -33,9 +33,8 @@ export class Meteo {
     }
 
     shouldUpdateMeteo(journeyDate: Date): boolean {
-/*         const daysUntilJourney = differenceInDays(journeyDate, new Date());
-        return daysUntilJourney <= 7 && daysUntilJourney > 0; */
-        return true;
+        const daysUntilJourney = differenceInDays(journeyDate, new Date());
+        return daysUntilJourney <= 7 && daysUntilJourney > 0;
     }
 }
 
