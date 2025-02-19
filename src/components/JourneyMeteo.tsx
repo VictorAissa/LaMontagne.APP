@@ -8,18 +8,17 @@ import partlyCloudyIcon from '@/assets/icons/meteo/partly-cloudy.png';
 import cloudyIcon from '@/assets/icons/meteo/cloudy.png';
 import snowIcon from '@/assets/icons/meteo/snow.png';
 import rainIcon from '@/assets/icons/meteo/rain.png';
-import windIcon from '@/assets/icons/meteo/wind.png';
-import tempIcon from '@/assets/icons/meteo/temperature.png';
-import isoIcon from '@/assets/icons/meteo/iso.png';
+import mountainIcon from '@/assets/icons/meteo/mountain.png';
+import mountainTop from '@/assets/icons/meteo/mountain-top.png';
+import hut from '@/assets/icons/meteo/hut.png';
+import moon from '@/assets/icons/meteo/crescent-moon.png';
+import windArrow from '@/assets/icons/meteo/wind-direction.png';
+import { Button } from './ui/button';
 
 interface JourneyMeteoProps {
     meteo: Meteo;
     journeyDate: Date;
     onUpdateClick?: () => void;
-}
-
-interface WindArrowProps {
-    wind: WindData;
 }
 
 const skyIcons = {
@@ -30,100 +29,106 @@ const skyIcons = {
     RAIN: rainIcon,
 };
 
-const BeraIndicator = ({ level }: { level: number }) => (
-    <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-            <div
-                key={n}
-                className={`w-3 h-6 rounded-sm transition-colors ${
-                    n <= level ? 'bg-red-500' : 'bg-gray-200'
-                }`}
-            />
-        ))}
-    </div>
-);
-
-const WindArrow = ({ wind }: WindArrowProps) => (
-    <div className="flex flex-col items-center gap-2">
-        <div className="flex items-center gap-2">
-            <img src={windIcon} alt="Wind" className="h-8 w-8" />
-            <div
-                className="transform transition-transform"
-                style={{
-                    transform: `rotate(${wind.getRotation()}deg)`,
-                }}
-            >
-                ↑
-            </div>
-        </div>
-        <span className="text-sm">{wind.speed} km/h</span>
-    </div>
-);
-
 const JourneyMeteo = ({
     meteo,
     journeyDate,
     onUpdateClick,
 }: JourneyMeteoProps) => {
     const meteoData = meteo instanceof Meteo ? meteo : new Meteo(meteo);
+    journeyDate = new Date();
 
     return (
-        <div className="flex flex-col gap-8">
-            {/* Conditions principales */}
-            <div className="flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-20">
-                <div className="flex flex-col items-center gap-2">
-                    <img
-                        src={skyIcons[meteoData.sky]}
-                        alt={meteoData.getDisplayName()}
-                        className="h-8 w-8"
-                    />
-                    <span className="text-sm">
-                        {meteoData.getDisplayName()}
-                    </span>
-                </div>
-
-                <div className="flex flex-col items-center gap-2">
-                    <WindArrow wind={meteoData.wind} />
-                </div>
-
-                <div className="flex flex-col items-center gap-2">
-                    <BeraIndicator level={meteoData.bera} />
-                    <span className="text-sm">BERA {meteoData.bera}/5</span>
-                </div>
+        <div className="w-full flex flex-col gap-12 max-w-[800px] justify-self-center">
+            <div className="w-full flex justify-center">
+                <img
+                    src={skyIcons[meteoData.sky]}
+                    alt={meteoData.getDisplayName()}
+                    className="h-32 w-32"
+                />
             </div>
-
-            {/* Températures et ISO */}
-            <div className="flex flex-wrap justify-center gap-8 md:gap-12 lg:gap-20">
-                <div className="flex flex-col items-center gap-2">
-                    <img src={tempIcon} alt="Temperature" className="h-8 w-8" />
-                    <div className="text-sm text-center">
-                        <div>Sommet: {meteoData.temperature.top}°C</div>
-                        <div>Base: {meteoData.temperature.bottom}°C</div>
+            <div className="flex flex-wrap justify-center gap-12 md:gap-16">
+                <div className="flex flex-col items-center bg-zinc-50 py-4 px-6 rounded-md">
+                    <h4 className="text-xl mb-3">Vent</h4>
+                    <div className="flex flex-col items-center">
+                        <div
+                            className="transform transition-transform"
+                            style={{
+                                transform: `rotate(${meteoData.wind.getRotation()}deg)`,
+                            }}
+                        >
+                            <img
+                                src={windArrow}
+                                alt="Wind arrow"
+                                className="w-8 h-8"
+                            />
+                        </div>
+                        <span className="flex justify-center text-sm">
+                            {meteoData.wind.speed} km/h
+                        </span>
                     </div>
                 </div>
 
-                <div className="flex flex-col items-center gap-2">
-                    <img src={isoIcon} alt="ISO" className="h-8 w-8" />
-                    <div className="text-sm text-center">
-                        <div>ISO 0° jour: {meteoData.iso.day}m</div>
-                        <div>ISO 0° nuit: {meteoData.iso.night}m</div>
+                <div className="flex flex-col items-center bg-zinc-50 py-4 px-6 rounded-md">
+                    <h4 className="text-xl mb-3">Températures</h4>
+                    <div className="flex gap-6">
+                        <div className="flex flex-col items-center">
+                            <img src={mountainTop} alt="" className="w-8 h-8" />
+                            <span className="flex justify-center text-sm">
+                                {meteoData.temperature.top}°C
+                            </span>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <img src={hut} alt="" className="w-8 h-8" />
+                            <span className="flex justify-center text-sm">
+                                {meteoData.temperature.bottom}°C
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center bg-zinc-50 py-4 px-6 rounded-md">
+                    <h4 className="text-xl mb-3">Iso 0°</h4>
+                    <div className="flex gap-6">
+                        <div>
+                            <img src={sunnyIcon} alt="" className="w-8 h-8" />
+                            <span className="flex justify-center text-sm">
+                                {meteoData.iso.day}m
+                            </span>
+                        </div>
+                        <div className="flex flex-col">
+                            <img src={moon} alt="" className="w-8 h-8" />
+                            <span className="flex justify-center text-sm">
+                                {meteoData.iso.night}m
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center bg-zinc-50 py-4 px-6 rounded-md">
+                    <h4 className="text-xl mb-3">Bera</h4>
+                    <div className="flex flex-col items-center">
+                        <img
+                            src={mountainIcon}
+                            alt="Mountain icon for BERA"
+                            className="w-8 h-8"
+                        />
+                        <span className="flex justify-center text-sm">
+                            {meteoData.bera}
+                        </span>
                     </div>
                 </div>
             </div>
 
             {meteoData.shouldUpdateMeteo(journeyDate) && (
-                <Alert>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                        Les prévisions météo peuvent être actualisées à J-7 de
-                        la course.{' '}
-                        <button
-                            onClick={onUpdateClick}
-                            className="text-blue-600 hover:text-blue-800 underline"
-                        >
-                            Modifier la course pour actualiser la météo
-                        </button>
-                    </AlertDescription>
+                <Alert className="flex flex-col items-center gap-5">
+                    <div className="flex items-center gap-3">
+                        <AlertTriangle className="h-8 w-8" />
+                        <AlertDescription>
+                            Les prévisions météo peuvent être actualisées à J-7
+                            de la course.
+                        </AlertDescription>
+                    </div>
+                    <Button onClick={onUpdateClick}>Actualiser</Button>
                 </Alert>
             )}
         </div>
