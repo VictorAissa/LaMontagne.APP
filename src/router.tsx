@@ -9,8 +9,12 @@ import Journeys from './pages/Journeys';
 import NewJourney from './pages/NewJourney';
 import JourneyDetails from './pages/JourneyDetails';
 import RouteLayout from './layouts/RootLayout';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store/store';
+import { useEffect } from 'react';
+import { logout } from './store/auth/authSlice';
+import { isTokenExpired } from './utils/token';
+import EditJourney from './pages/EditJourney';
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
     const isAuthenticated = useSelector(
@@ -25,11 +29,18 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-    const isAuthenticated = useSelector(
-        (state: RootState) => state.auth.isAuthenticated
+    const dispatch = useDispatch();
+    const { isAuthenticated, token } = useSelector(
+        (state: RootState) => state.auth
     );
 
-    if (!isAuthenticated) {
+    useEffect(() => {
+        if (token && isTokenExpired(token)) {
+            dispatch(logout());
+        }
+    }, [dispatch, token]);
+
+    if (!isAuthenticated || (token && isTokenExpired(token))) {
         return <Navigate to="/login" replace />;
     }
 
@@ -65,18 +76,26 @@ const routes: RouteObject[] = [
                 ),
             },
             {
-                path: '/journeys/new',
-                element: (
-                    <PrivateRoute>
-                        <NewJourney />
-                    </PrivateRoute>
-                ),
-            },
-            {
                 path: '/journeys/:id',
                 element: (
                     <PrivateRoute>
                         <JourneyDetails />
+                    </PrivateRoute>
+                ),
+            },
+            {
+                path: '/journeys/new',
+                element: (
+                    <PrivateRoute>
+                        <EditJourney />
+                    </PrivateRoute>
+                ),
+            },
+            {
+                path: '/journeys/:id/edit',
+                element: (
+                    <PrivateRoute>
+                        <EditJourney />
                     </PrivateRoute>
                 ),
             },

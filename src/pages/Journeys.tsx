@@ -1,14 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import JourneyFiltersProps from '@/components/JourneyFilters';
-import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import {
-    setJourneys,
-    setStatus,
-    setError,
-    fetchUserJourneys,
-} from '@/store/features/journeySlice';
+import { fetchUserJourneys } from '@/store/features/journeySlice';
 import JourneyCard from '@/components/JourneyCard';
 import { journeyAdapter } from '@/adapters/journeyAdapter';
 import { Journey } from '@/types/Journey';
@@ -17,7 +11,7 @@ const Journeys = () => {
     const dispatch = useAppDispatch();
 
     const journeys = useAppSelector(
-        (state: RootState) =>
+        (state: RootState): (Journey | null)[] =>
             state.journey.journeys?.map((journey) =>
                 journeyAdapter.fromJSON(journey)
             ) || []
@@ -29,7 +23,6 @@ const Journeys = () => {
     );
     const userId = useAppSelector((state: RootState) => state.auth.userId);
     const season = useAppSelector((state: RootState) => state.filters.season);
-    const token = useAppSelector((state: RootState) => state.auth.token);
 
     const API_URL: ImportMetaEnv = import.meta.env.VITE_API_URL;
 
@@ -39,7 +32,7 @@ const Journeys = () => {
 
         if (dateRange?.from && dateRange?.to) {
             filtered = filtered.filter((journey) => {
-                const journeyDate = new Date(journey.date);
+                const journeyDate = journey?.date || new Date();
                 return (
                     journeyDate >= new Date(dateRange.from!) &&
                     new Date(dateRange.to!)
@@ -48,7 +41,7 @@ const Journeys = () => {
         }
 
         if (season) {
-            filtered = filtered.filter((journey) => journey.season === season);
+            filtered = filtered.filter((journey) => journey?.season === season);
         }
 
         return filtered;
@@ -75,10 +68,13 @@ const Journeys = () => {
                     <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 px-6 [column-fill:_balance] space-y-4">
                         {filteredJourneys.map((journey, index) => (
                             <div
-                                key={journey.id}
+                                key={journey?.id}
                                 className="break-inside-avoid mb-4"
                             >
-                                <JourneyCard index={index} journey={journey} />
+                                <JourneyCard
+                                    index={index}
+                                    journey={journey || new Journey()}
+                                />
                             </div>
                         ))}
                     </div>

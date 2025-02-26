@@ -13,15 +13,29 @@ import JourneyMap from '@/components/JourneyMap';
 import SectionTitle from '@/components/SectionTitle';
 import JourneyProtections from '@/components/JourneyProtections';
 import JourneyMeteo from '@/components/JourneyMeteo';
+import JourneyOservations from '@/components/JourneyOservations';
+import { journeyAdapter } from '@/adapters/journeyAdapter';
+import { Journey } from '@/types/Journey';
+import EditButton from '@/components/EditButton';
 
 const JourneyDetails = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const journey = useAppSelector(
-        (state: RootState) => state.journey.currentJourney
+        (state: RootState): Journey | null =>
+            journeyAdapter.fromJSON(state.journey.currentJourney) || null
     );
+
     const isLoading = !journey || (id && journey.id !== id);
+
+    const formatDateToString = (date: Date): string => {
+        return date.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+    };
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -60,6 +74,13 @@ const JourneyDetails = () => {
                             <p>{journey?.altitudes.total}</p>
                         </div>
                     </div>
+                </div>
+                <div className="flex justify-center">
+                    <p className="text-xl text-neutral-500">
+                        {isLoading
+                            ? '1 janvier 2000'
+                            : formatDateToString(journey.date)}
+                    </p>
                 </div>
             </div>
             {journey?.pictures?.length && journey.pictures.length > 0 ? (
@@ -105,6 +126,18 @@ const JourneyDetails = () => {
                         }
                     />
                 )}
+            </div>
+            <div className="w-full py-10 md:py-16">
+                <SectionTitle content="Observations" />
+                {!isLoading && (
+                    <JourneyOservations miscellaneous={journey.miscellaneous} />
+                )}
+            </div>
+            <div className="w-full py-10 md:py-16 flex justify-center">
+                <EditButton
+                    journeyId={journey?.id ? parseInt(journey.id) : null}
+                    textContent={'Editer la course'}
+                />
             </div>
         </div>
     );

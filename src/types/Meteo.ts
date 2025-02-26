@@ -39,12 +39,12 @@ export class Meteo {
 }
 
 export class Temperature {
-    top: number;
-    bottom: number;
+    min: number;
+    max: number;
 
     constructor(data?: Partial<Temperature>) {
-        this.top = data?.top || 0;
-        this.bottom = data?.bottom || 0;
+        this.min = data?.min || 0;
+        this.max = data?.max || 0;
     }
 }
 

@@ -7,23 +7,22 @@ import {
     CarouselNext,
 } from './ui/carousel';
 
-interface Props {
+interface JourneyCarouselProps {
     journey: Journey;
 }
 
-const JourneyCarousel = (props: Props) => {
+const JourneyCarousel = ({ journey }: JourneyCarouselProps) => {
     return (
         <Carousel className="w-full">
             <CarouselContent className="">
-                {props.journey.pictures.map((picture, index) => (
+                {journey.pictures.map((picture, index) => (
                     <CarouselItem
                         key={`${picture}-index${index}`}
                         className={`
                                         ${
-                                            props.journey.pictures.length === 1
+                                            journey.pictures.length === 1
                                                 ? 'basis-full max-w-[600px]'
-                                                : props.journey.pictures
-                                                      .length === 2
+                                                : journey.pictures.length === 2
                                                 ? 'basis-full md:basis-1/2 max-w-[600px]'
                                                 : 'basis-full md:basis-1/2 lg:basis-1/3 max-w-[600px]'
                                         }
@@ -43,16 +42,13 @@ const JourneyCarousel = (props: Props) => {
             </CarouselContent>
             <CarouselPrevious
                 className={`
-                                ${
-                                    props.journey.pictures.length === 1 &&
-                                    'hidden'
-                                }
+                                ${journey.pictures.length === 1 && 'hidden'}
                                 left-2
                             `}
             />
             <CarouselNext
                 className={`
-                            ${props.journey.pictures.length === 1 && 'hidden'}
+                            ${journey.pictures.length === 1 && 'hidden'}
                             right-2
                         `}
             />

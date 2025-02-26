@@ -1,9 +1,8 @@
 import { Journey } from '@/types/Journey';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { useEffect, useState } from 'react';
-import { getBackgroundImage, getMountainImages } from '@/utils/image';
+import { getBackgroundImage } from '@/utils/image';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { setCurrentJourney } from '@/store/features/journeySlice';
 import { journeyAdapter } from '@/adapters/journeyAdapter';
 import { useAppDispatch } from '@/store/hooks';
@@ -13,7 +12,7 @@ interface Props {
     journey: Journey;
 }
 
-const JourneyCard = (props: Props) => {
+const JourneyCard = ({ index, journey }: Props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
@@ -25,15 +24,15 @@ const JourneyCard = (props: Props) => {
     };
 
     const handleCardClick = () => {
-        dispatch(setCurrentJourney(journeyAdapter.toJSON(props.journey)));
-        navigate(`/journeys/${props.journey.id}`);
+        dispatch(setCurrentJourney(journeyAdapter.toJSON(journey)));
+        navigate(`/journeys/${journey.id}`);
     };
 
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 640;
             setIsMobile(mobile);
-            setCardHeight(mobile ? 'aspect-[5/3]' : getHeight(props.index));
+            setCardHeight(mobile ? 'aspect-[5/3]' : getHeight(index));
         };
 
         handleResize();
@@ -41,7 +40,7 @@ const JourneyCard = (props: Props) => {
         window.addEventListener('resize', handleResize);
 
         return () => window.removeEventListener('resize', handleResize);
-    }, [props.index]);
+    }, [index]);
 
     return (
         <Card
@@ -51,27 +50,20 @@ const JourneyCard = (props: Props) => {
             <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat transform group-hover:scale-110 transition-transform duration-300 ease-in-out"
                 style={{
-                    backgroundImage: getBackgroundImage(
-                        props.journey,
-                        props.index
-                    ),
+                    backgroundImage: getBackgroundImage(journey, index),
                 }}
             />
             <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
 
             <CardHeader className="relative h-full flex flex-col justify-end text-white p-6">
-                <CardTitle className="text-xl mb-2">
-                    {props.journey.title}
-                </CardTitle>
+                <CardTitle className="text-xl mb-2">{journey.title}</CardTitle>
                 <CardContent className="p-0">
                     <div className="flex items-center gap-4 text-sm">
                         <span>
-                            {new Date(props.journey.date).toLocaleDateString()}
+                            {new Date(journey.date).toLocaleDateString()}
                         </span>
                         <span className="px-2 py-1 bg-white/20 rounded-full">
-                            {props.journey.season === 'SUMMER'
-                                ? 'Été'
-                                : 'Hiver'}
+                            {journey.season === 'SUMMER' ? 'Été' : 'Hiver'}
                         </span>
                     </div>
                 </CardContent>

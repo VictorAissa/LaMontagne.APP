@@ -1,16 +1,14 @@
 import { Meteo } from '@/types/Meteo';
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
-// Import des icônes depuis les assets
 import sunnyIcon from '@/assets/icons/meteo/sunny.png';
 import partlyCloudyIcon from '@/assets/icons/meteo/partly-cloudy.png';
 import cloudyIcon from '@/assets/icons/meteo/cloudy.png';
 import snowIcon from '@/assets/icons/meteo/snow.png';
 import rainIcon from '@/assets/icons/meteo/rain.png';
 import mountainIcon from '@/assets/icons/meteo/mountain.png';
-import mountainTop from '@/assets/icons/meteo/mountain-top.png';
-import hut from '@/assets/icons/meteo/hut.png';
+import maxTemp from '@/assets/icons/meteo/high-temperature.png';
+import minTemp from '@/assets/icons/meteo/low-temperature.png';
 import moon from '@/assets/icons/meteo/crescent-moon.png';
 import windArrow from '@/assets/icons/meteo/wind-direction.png';
 import { Button } from './ui/button';
@@ -72,15 +70,15 @@ const JourneyMeteo = ({
                     <h4 className="text-xl mb-3">Températures</h4>
                     <div className="flex gap-6">
                         <div className="flex flex-col items-center">
-                            <img src={mountainTop} alt="" className="w-8 h-8" />
+                            <img src={minTemp} alt="" className="w-8 h-8" />
                             <span className="flex justify-center text-sm">
-                                {meteoData.temperature.top}°C
+                                {meteoData.temperature.min}°C
                             </span>
                         </div>
                         <div className="flex flex-col items-center">
-                            <img src={hut} alt="" className="w-8 h-8" />
+                            <img src={maxTemp} alt="" className="w-8 h-8" />
                             <span className="flex justify-center text-sm">
-                                {meteoData.temperature.bottom}°C
+                                {meteoData.temperature.max}°C
                             </span>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
-// src/services/api.ts
 import { Journey } from '@/types/Journey';
+import { Meteo } from '@/types/Meteo';
 
 interface ApiResponse<T> {
     data: T;
@@ -51,7 +51,7 @@ export class ApiService {
         }
     }
 
-    // Journeys
+    //** JOURNEY */
     async getUserJourneys(userId: string): Promise<ApiResponse<Journey[]>> {
         return this.fetchWithAuth<Journey[]>(`/api/journey/user/${userId}`);
     }
@@ -80,7 +80,7 @@ export class ApiService {
         });
     }
 
-    // Upload methods
+    //** UPLOAD FILE */
     async uploadImage(journeyId: string, file: File): Promise<ApiResponse<string>> {
         const formData = new FormData();
         formData.append('file', file);
@@ -104,6 +104,28 @@ export class ApiService {
             method: 'POST',
             headers,
             body: formData,
+        });
+    }
+
+    /*** METEO */
+    async getJourneyMeteo(journeyId: string): Promise<ApiResponse<Meteo>> {
+        return this.fetchWithAuth<Meteo>(`/api/meteo/journey/${journeyId}`);
+    }
+
+    async getMeteoByCoordinates(latitude: number, longitude: number, date: string): Promise<ApiResponse<Meteo>> {
+        return this.fetchWithAuth<Meteo>('/api/meteo', {
+            method: 'POST',
+            body: JSON.stringify({
+                latitude,
+                longitude,
+                date, // yyyy-MM-dd
+            }),
+        });
+    }
+
+    async refreshJourneyMeteo(journeyId: string): Promise<ApiResponse<Meteo>> {
+        return this.fetchWithAuth<Meteo>(`/api/meteo/journey/${journeyId}/refresh`, {
+            method: 'PUT',
         });
     }
 }
