@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 interface EditButtonProps {
-    journeyId: number | null;
+    journeyId: string | null;
     textContent: string;
 }
 

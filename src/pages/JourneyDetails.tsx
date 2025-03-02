@@ -135,7 +135,7 @@ const JourneyDetails = () => {
             </div>
             <div className="w-full py-10 md:py-16 flex justify-center">
                 <EditButton
-                    journeyId={journey?.id ? parseInt(journey.id) : null}
+                    journeyId={journey?.id ? journey.id : null}
                     textContent={'Editer la course'}
                 />
             </div>
