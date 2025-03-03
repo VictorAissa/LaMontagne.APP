@@ -62,7 +62,6 @@ const EditJourney = () => {
                 !formData.itinerary?.end?.latitude ||
                 !formData.itinerary?.end?.longitude
             ) {
-                console.error('Coordonnées de fin manquantes');
                 return;
             }
 
@@ -92,8 +91,6 @@ const EditJourney = () => {
                     ...meteoData,
                 },
             }));
-
-            console.log('Données météo récupérées avec succès:', response.data);
         } catch (error) {
             console.error('Exception lors de la requête météo:', error);
         }
@@ -122,6 +119,10 @@ const EditJourney = () => {
         }
     }, [formData.id, journey]);
 
+    useEffect(() => {
+        console.log(journey);
+    }, [journey]);
+
     const handleInputChange = (
         e: React.ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -140,21 +141,19 @@ const EditJourney = () => {
         >
     ) => {
         const { name, value } = e.target;
+
         const parts = name.split('.');
 
         if (parts.length === 1) {
-            // Champ simple
             setFormData((prev) => ({
                 ...prev,
                 [name]: value,
             }));
         } else {
-            // Champ imbriqué
             setFormData((prev) => {
                 const current = { ...prev };
                 let temp = current;
 
-                // Naviguer jusqu'au dernier niveau
                 for (let i = 0; i < parts.length - 1; i++) {
                     const part = parts[i];
                     if (!temp[part]) temp[part] = {};
@@ -162,7 +161,6 @@ const EditJourney = () => {
                     temp = temp[part];
                 }
 
-                // Définir la valeur
                 temp[parts[parts.length - 1]] = value;
                 return current;
             });
@@ -312,7 +310,7 @@ const EditJourney = () => {
                     value={formData.title || ''}
                     onChange={handleInputChange}
                     placeholder="Nom de la course"
-                    className="border-none text-2xl text-center"
+                    className="border-none text-2xl md:text-2xl text-center"
                     required
                 />
             </div>
@@ -585,20 +583,6 @@ const EditJourney = () => {
             <SectionTitle content="Météo" />
             <Card className="mb-8">
                 <CardContent className="pt-6">
-                    <div className="flex justify-end mb-4">
-                        {canRequestMeteo() && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={getMeteo}
-                                className="flex items-center gap-2"
-                            >
-                                <RefreshCw size={16} />
-                                Mettre à jour la météo
-                            </Button>
-                        )}
-                    </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
                             <Label htmlFor="meteo-sky">Conditions météo</Label>
@@ -653,15 +637,15 @@ const EditJourney = () => {
                             <div className="grid grid-cols-2 gap-2 mt-2">
                                 <div>
                                     <Label
-                                        htmlFor="temp-top"
+                                        htmlFor="temp-max"
                                         className="text-sm"
                                     >
-                                        Haut
+                                        Max
                                     </Label>
                                     <Input
-                                        id="temp-top"
+                                        id="temp-max"
                                         type="number"
-                                        name="meteo.temperature.top"
+                                        name="meteo.temperature.max"
                                         value={
                                             formData.meteo?.temperature?.max ||
                                             ''
@@ -672,15 +656,15 @@ const EditJourney = () => {
                                 </div>
                                 <div>
                                     <Label
-                                        htmlFor="temp-bottom"
+                                        htmlFor="temp-min"
                                         className="text-sm"
                                     >
-                                        Bas
+                                        Min
                                     </Label>
                                     <Input
-                                        id="temp-bottom"
+                                        id="temp-min"
                                         type="number"
-                                        name="meteo.temperature.bottom"
+                                        name="meteo.temperature.min"
                                         value={
                                             formData.meteo?.temperature?.min ||
                                             ''
@@ -790,6 +774,19 @@ const EditJourney = () => {
                             </div>
                         </div>
                     </div>
+                    <div className="flex justify-end mb-4">
+                        {canRequestMeteo() && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={getMeteo}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw size={16} />
+                                Mettre à jour la météo
+                            </Button>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
 
@@ -799,53 +796,53 @@ const EditJourney = () => {
                 <CardContent className="pt-6">
                     <div className="mb-6">
                         <Label>Cordes</Label>
-                        {/* Ici, il faudrait un système pour ajouter/supprimer des cordes */}
-                        <div className="grid grid-cols-2 gap-4 mt-2">
-                            <div>
-                                <Label
-                                    htmlFor="rope-diameter"
-                                    className="text-sm"
+                        <div className="flex flex-col gap-6">
+                            {journey?.protections?.ropes.map((rope, index) => (
+                                <div
+                                    className="flex gap-3"
+                                    key={`rope-group-${index}`}
                                 >
-                                    Diamètre (mm)
-                                </Label>
-                                <Input
-                                    id="rope-diameter"
-                                    type="number"
-                                    step="0.1"
-                                    name="protections.ropes[0].diameter"
-                                    value={
-                                        formData.protections?.ropes?.[0]
-                                            ?.diameter || ''
-                                    }
-                                    onChange={handleNestedInputChange}
-                                    placeholder="8.4"
-                                />
-                            </div>
-                            <div>
-                                <Label
-                                    htmlFor="rope-length"
-                                    className="text-sm"
-                                >
-                                    Longueur (m)
-                                </Label>
-                                <Input
-                                    id="rope-length"
-                                    type="number"
-                                    name="protections.ropes[0].length"
-                                    value={
-                                        formData.protections?.ropes?.[0]
-                                            ?.length || ''
-                                    }
-                                    onChange={handleNestedInputChange}
-                                    placeholder="50"
-                                />
-                            </div>
+                                    <div>
+                                        <Label
+                                            htmlFor="rope-diameter"
+                                            className="text-sm"
+                                        >
+                                            Diamètre (mm)
+                                        </Label>
+                                        <Input
+                                            id="rope-diameter"
+                                            type="number"
+                                            step="0.1"
+                                            name="protections.ropes[0].diameter"
+                                            value={rope.diameter || ''}
+                                            onChange={handleNestedInputChange}
+                                            placeholder="8.4"
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label
+                                            htmlFor="rope-length"
+                                            className="text-sm"
+                                        >
+                                            Longueur (m)
+                                        </Label>
+                                        <Input
+                                            id="rope-length"
+                                            type="number"
+                                            name="protections.ropes[0].length"
+                                            value={rope.length || ''}
+                                            onChange={handleNestedInputChange}
+                                            placeholder="50"
+                                        />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <Label htmlFor="nuts">Nombre de nuts</Label>
+                            <Label htmlFor="nuts">Nombre de coinceurs</Label>
                             <Input
                                 id="nuts"
                                 type="number"
@@ -858,7 +855,7 @@ const EditJourney = () => {
                         </div>
                         <div>
                             <Label htmlFor="cams">
-                                Cams (tailles, séparées par des virgules)
+                                Friends (tailles, séparées par des virgules)
                             </Label>
                             <Input
                                 id="cams"
@@ -878,7 +875,7 @@ const EditJourney = () => {
                         </div>
                         <div>
                             <Label htmlFor="screws">
-                                Nombre de vis à glace
+                                Nombre de broches à glace
                             </Label>
                             <Input
                                 id="screws"
@@ -903,7 +900,7 @@ const EditJourney = () => {
                         value={formData.miscellaneous || ''}
                         onChange={handleInputChange}
                         placeholder="Notes, observations, conseils..."
-                        className="min-h-32"
+                        className="min-h-32 border-none"
                     />
                 </CardContent>
             </Card>
