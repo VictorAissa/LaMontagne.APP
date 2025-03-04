@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     Drawer,
     DrawerContent,
@@ -17,7 +18,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { logout } from '@/store/auth/authSlice';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 
 interface MenuItem {
     title: string;
@@ -73,17 +73,29 @@ const BurgerMenu: React.FC = () => {
                             <ul className="grid w-48 gap-3 p-4">
                                 {category.items.map((item) => (
                                     <li key={item.title}>
-                                        <NavigationMenuLink asChild>
-                                            <a
-                                                href={item.href}
-                                                onClick={(e) =>
-                                                    handleMenuItemClick(item, e)
-                                                }
+                                        {item.action ? (
+                                            <NavigationMenuLink asChild>
+                                                <a
+                                                    href={item.href}
+                                                    onClick={(e) =>
+                                                        handleMenuItemClick(
+                                                            item,
+                                                            e
+                                                        )
+                                                    }
+                                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                >
+                                                    {item.title}
+                                                </a>
+                                            </NavigationMenuLink>
+                                        ) : (
+                                            <Link
+                                                to={item.href}
                                                 className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                             >
                                                 {item.title}
-                                            </a>
-                                        </NavigationMenuLink>
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
@@ -98,7 +110,7 @@ const BurgerMenu: React.FC = () => {
         <Drawer>
             <DrawerTrigger asChild className="md:hidden">
                 <Button variant="ghost" size="icon">
-                    <Menu className="h-12 " />
+                    <Menu />
                     <span className="sr-only">Toggle menu</span>
                 </Button>
             </DrawerTrigger>
@@ -115,15 +127,24 @@ const BurgerMenu: React.FC = () => {
                             <ul className="space-y-2">
                                 {category.items.map((item) => (
                                     <li key={item.title}>
-                                        <a
-                                            href={item.href}
-                                            onClick={(e) =>
-                                                handleMenuItemClick(item, e)
-                                            }
-                                            className="block rounded-md p-2 text-foreground/70 transition-colors hover:text-foreground hover:bg-accent"
-                                        >
-                                            {item.title}
-                                        </a>
+                                        {item.action ? (
+                                            <a
+                                                href={item.href}
+                                                onClick={(e) =>
+                                                    handleMenuItemClick(item, e)
+                                                }
+                                                className="block rounded-md p-2 text-foreground/70 transition-colors hover:text-foreground hover:bg-accent"
+                                            >
+                                                {item.title}
+                                            </a>
+                                        ) : (
+                                            <Link
+                                                to={item.href}
+                                                className="block rounded-md p-2 text-foreground/70 transition-colors hover:text-foreground hover:bg-accent"
+                                            >
+                                                {item.title}
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>
