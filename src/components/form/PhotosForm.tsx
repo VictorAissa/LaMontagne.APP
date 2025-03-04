@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
-import { ImageIcon, Trash2, Upload } from 'lucide-react';
+import { ImageIcon, Trash2 } from 'lucide-react';
 
 interface PhotosFormProps {
     existingPhotos: string[];

@@ -15,7 +15,6 @@ interface Props {
 const JourneyCard = ({ index, journey }: Props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
     const [cardHeight, setCardHeight] = useState('');
 
     const getHeight = (index: number) => {
@@ -31,7 +30,6 @@ const JourneyCard = ({ index, journey }: Props) => {
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 640;
-            setIsMobile(mobile);
             setCardHeight(mobile ? 'aspect-[5/3]' : getHeight(index));
         };
 

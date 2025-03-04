@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
 
 import { api } from '@/services/api';
-import { Meteo, SkyCondition, WindDirection } from '@/types/Meteo';
+import { Meteo, SkyCondition, Wind, WindDirection } from '@/types/Meteo';
 import { Label } from '../ui/label';
 import {
     Select,
@@ -100,10 +100,10 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
     const handleWindDirectionChange = (value: string) => {
         const updatedMeteo = new Meteo({
             ...meteo,
-            wind: {
+            wind: new Wind({
                 ...meteo.wind,
                 direction: value as WindDirection,
-            },
+            }),
         });
         onChange(updatedMeteo);
     };
@@ -112,10 +112,10 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
         const speed = Number(e.target.value) || 0;
         const updatedMeteo = new Meteo({
             ...meteo,
-            wind: {
+            wind: new Wind({
                 ...meteo.wind,
                 speed,
-            },
+            }),
         });
         onChange(updatedMeteo);
     };
