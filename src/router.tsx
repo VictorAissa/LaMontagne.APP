@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import Login from './pages/Login';
 import Journeys from './pages/Journeys';
-import NewJourney from './pages/NewJourney';
 import JourneyDetails from './pages/JourneyDetails';
 import RouteLayout from './layouts/RootLayout';
 import { useDispatch, useSelector } from 'react-redux';
