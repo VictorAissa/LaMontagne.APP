@@ -71,7 +71,6 @@ const EditJourney = () => {
         console.log(journey);
     }, [journey]);
 
-    // Handlers pour les propriétés de base
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setJourney((current) => {
             const updated = new Journey(current);
@@ -163,7 +162,6 @@ const EditJourney = () => {
 
         try {
             if (isNewJourney) {
-                // Utiliser le thunk createJourney avec l'objet journey et les fichiers
                 await dispatch(
                     createJourney({
                         journeyData: journey,
@@ -171,7 +169,6 @@ const EditJourney = () => {
                     })
                 ).unwrap();
             } else {
-                // Utiliser le thunk updateJourney avec l'objet journey et les fichiers
                 await dispatch(
                     updateJourney({
                         journeyData: journey,
@@ -180,7 +177,6 @@ const EditJourney = () => {
                 ).unwrap();
             }
 
-            // Redirection vers la liste des journeys après le succès
             navigate('/journeys');
         } catch (error) {
             console.error('Échec de la sauvegarde de la course:', error);
@@ -235,7 +231,7 @@ const EditJourney = () => {
                                 }
                                 onChange={handleDateChange}
                                 required
-                                className="mt-2"
+                                className="mt-2 w-max"
                             />
                         </div>
                         <div>
@@ -244,7 +240,10 @@ const EditJourney = () => {
                                 value={journey.season}
                                 onValueChange={handleSeasonChange}
                             >
-                                <SelectTrigger id="season" className="mt-2">
+                                <SelectTrigger
+                                    id="season"
+                                    className="mt-2 w-max"
+                                >
                                     <SelectValue placeholder="Choisir une saison" />
                                 </SelectTrigger>
                                 <SelectContent>

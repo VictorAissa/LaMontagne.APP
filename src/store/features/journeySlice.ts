@@ -46,30 +46,14 @@ export const createJourney = createAsyncThunk(
         try {
             const { journeyData, files } = payload;
             
-            // Créer un FormData
-            const formData = new FormData();
-            formData.append('journeyData', JSON.stringify(journeyData));
+            // Utiliser la méthode API modifiée qui gère le FormData en interne
+            const response = await api.createJourney(journeyData, files);
             
-            // Ajouter les fichiers s'il y en a
-            if (files && files.length > 0) {
-                files.forEach(file => {
-                    formData.append('files', file);
-                });
+            if (response.error) {
+                throw new Error(response.error);
             }
             
-            // Appel à ton API
-            const response = await fetch('/api/journeys', {
-                method: 'POST',
-                body: formData
-                // Pas besoin de définir le Content-Type, fetch le fait automatiquement pour FormData
-            });
-            
-            if (!response.ok) {
-                throw new Error('Échec de la création');
-            }
-            
-            const data = await response.json();
-            return data;
+            return response.data;
         } catch (error) {
             return rejectWithValue(error instanceof Error ? error.message : 'Erreur inconnue');
         }
@@ -82,30 +66,17 @@ export const updateJourney = createAsyncThunk(
         try {
             const { journeyData, files } = payload;
             
-            // Créer un FormData
-            const formData = new FormData();
-            formData.append('journeyData', JSON.stringify(journeyData));
-            
-            // Ajouter les fichiers s'il y en a
-            if (files && files.length > 0) {
-                files.forEach(file => {
-                    formData.append('files', file);
-                });
+            if (!journeyData.id) {
+                throw new Error('ID de journey manquant pour la mise à jour');
             }
             
-            // Appel à ton API
-            const response = await fetch(`/api/journeys/${journeyData.id}`, {
-                method: 'PUT',
-                body: formData
-                // Pas besoin de définir le Content-Type, fetch le fait automatiquement pour FormData
-            });
+            const response = await api.updateJourney(journeyData, files);
             
-            if (!response.ok) {
-                throw new Error('Échec de la mise à jour');
+            if (response.error) {
+                throw new Error(response.error);
             }
             
-            const data = await response.json();
-            return data;
+            return response.data;
         } catch (error) {
             return rejectWithValue(error instanceof Error ? error.message : 'Erreur inconnue');
         }

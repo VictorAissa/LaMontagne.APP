@@ -60,17 +60,51 @@ export class ApiService {
         return this.fetchWithAuth<Journey>(`/api/journey/${journeyId}`);
     }
 
-    async createJourney(journey: Partial<Journey>): Promise<ApiResponse<Journey>> {
+    async createJourney(journey: Partial<Journey>, files?: File[]): Promise<ApiResponse<Journey>> {
+        if (!files || files.length === 0) {
+            return this.fetchWithAuth<Journey>('/api/journey', {
+                method: 'POST',
+                body: JSON.stringify(journey),
+            });
+        }
+        
+        const formData = new FormData();
+        formData.append('journeyData', new Blob([JSON.stringify(journey)], {
+            type: 'application/json'
+        }));
+        
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+        
         return this.fetchWithAuth<Journey>('/api/journey', {
             method: 'POST',
-            body: JSON.stringify(journey),
+            body: formData,
         });
     }
 
-    async updateJourney(journeyId: string, journey: Partial<Journey>): Promise<ApiResponse<Journey>> {
-        return this.fetchWithAuth<Journey>(`/api/journey/${journeyId}`, {
+    async updateJourney(journey: Partial<Journey>, files?: File[]): Promise<ApiResponse<Journey>> {
+        if (!files || files.length === 0) {
+            return this.fetchWithAuth<Journey>(`/api/journey`, {
+                method: 'PUT',
+                body: JSON.stringify(journey),
+            });
+        }
+        
+        const formData = new FormData();
+        //const journeyWithId = { ...journey, id: journeyId };
+        
+        formData.append('journeyData', new Blob([JSON.stringify(journey)], {
+            type: 'application/json'
+        }));
+        
+        files.forEach(file => {
+            formData.append('files', file);
+        });
+        
+        return this.fetchWithAuth<Journey>(`/api/journey`, {
             method: 'PUT',
-            body: JSON.stringify(journey),
+            body: formData,
         });
     }
 

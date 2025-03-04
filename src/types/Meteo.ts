@@ -12,7 +12,7 @@ export class Meteo {
         this.temperature = new Temperature(data?.temperature);
         this.iso = new Iso(data?.iso);
         this.wind = new Wind(data?.wind);
-        this.bera = data?.bera || 1;
+        this.bera = data?.bera || 0;
     }
 
     getDisplayName(): string {

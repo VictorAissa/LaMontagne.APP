@@ -176,13 +176,13 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
                     </div>
 
                     <div className="w-full h-[400px] rounded-md overflow-hidden">
-                        {itinerary.hasValidCoordinates() && (
+                        {
                             <JourneyMap
                                 start={itinerary.start}
                                 end={itinerary.end}
                                 gpxUrl={itinerary.gpx}
                             />
-                        )}
+                        }
                     </div>
                 </CardContent>
             </Card>

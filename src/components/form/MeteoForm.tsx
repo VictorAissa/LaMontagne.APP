@@ -31,6 +31,7 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
 }) => {
     const SKY_OPTIONS = ['SUNNY', 'PARTLY_CLOUDY', 'CLOUDY', 'SNOW', 'RAIN'];
     const WIND_DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const BERA = ['0', '1', '2', '3', '4', '5'];
 
     const canRequestMeteo = () => {
         if (!date) return false;
@@ -44,15 +45,6 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
         const updatedMeteo = new Meteo({
             ...meteo,
             sky: value as SkyCondition,
-        });
-        onChange(updatedMeteo);
-    };
-
-    const handleBeraChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const bera = Number(e.target.value) || 1;
-        const updatedMeteo = new Meteo({
-            ...meteo,
-            bera,
         });
         onChange(updatedMeteo);
     };
@@ -128,6 +120,15 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
         onChange(updatedMeteo);
     };
 
+    const handleBeraChange = (value: string) => {
+        const parsedValue = parseInt(value, 0);
+        const updatedMeteo = new Meteo({
+            ...meteo,
+            bera: parsedValue,
+        });
+        onChange(updatedMeteo);
+    };
+
     const handleGetMeteo = async () => {
         try {
             if (!coordinates.latitude || !coordinates.longitude) {
@@ -199,17 +200,22 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
                             <Label htmlFor="meteo-bera">
                                 Indice BERA (1-5)
                             </Label>
-                            <Input
-                                id="meteo-bera"
-                                type="number"
-                                min="1"
-                                max="5"
-                                name="meteo.bera"
-                                value={meteo.bera || ''}
-                                onChange={handleBeraChange}
-                                placeholder="2"
-                                className="mt-2"
-                            />
+                            <Select
+                                value={meteo.bera.toString()}
+                                onValueChange={handleBeraChange}
+                                defaultValue="0"
+                            >
+                                <SelectTrigger id="bera">
+                                    <SelectValue placeholder="0" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {BERA.map((value) => (
+                                        <SelectItem key={value} value={value}>
+                                            {value}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
