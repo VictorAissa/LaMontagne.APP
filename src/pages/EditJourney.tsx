@@ -62,7 +62,7 @@ const EditJourney = () => {
     }, [id, dispatch, journeyFromStore]);
 
     useEffect(() => {
-        if (journeyFromStore) {
+        if (journeyFromStore && isLoading) {
             setJourney(new Journey(journeyFromStore));
         }
     }, [journeyFromStore]);
@@ -135,6 +135,7 @@ const EditJourney = () => {
         setJourney((current) => {
             const updated = new Journey(current);
             updated.meteo = meteo;
+            console.log('Journey après mise à jour:', updated);
             return updated;
         });
     };
@@ -231,7 +232,7 @@ const EditJourney = () => {
                                 }
                                 onChange={handleDateChange}
                                 required
-                                className="mt-2 w-max"
+                                className="mt-2"
                             />
                         </div>
                         <div>
@@ -240,10 +241,7 @@ const EditJourney = () => {
                                 value={journey.season}
                                 onValueChange={handleSeasonChange}
                             >
-                                <SelectTrigger
-                                    id="season"
-                                    className="mt-2 w-max"
-                                >
+                                <SelectTrigger id="season" className="mt-2">
                                     <SelectValue placeholder="Choisir une saison" />
                                 </SelectTrigger>
                                 <SelectContent>

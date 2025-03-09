@@ -23,10 +23,14 @@ export class Meteo {
                 return 'Partiellement nuageux'
             case 'CLOUDY':
                 return 'Nuageux'
-            case 'SNOW':
+            case 'LIGHT_RAIN':
+                return 'Petite pluie'
+            case 'HEAVY_RAIN':
+                return 'Grosse pluie'
+            case 'LIGHT_SNOW':
                 return 'Neige'
-            case 'RAIN':
-                return 'Pluie'
+            case 'HEAVY_SNOW':
+                return 'Grosse neige'
             default:
                 return '';
         }
@@ -77,4 +81,4 @@ export class Wind {
 }
 
 export type WindDirection = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW";
-export type SkyCondition = 'SUNNY' | 'PARTLY_CLOUDY' | 'CLOUDY' | 'SNOW' | 'RAIN';
+export type SkyCondition = 'SUNNY' | 'PARTLY_CLOUDY' | 'CLOUDY' | 'LIGHT_RAIN' | 'HEAVY_RAIN' | 'LIGHT_SNOW' | 'HEAVY_SNOW';

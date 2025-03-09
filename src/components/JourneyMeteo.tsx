@@ -4,8 +4,10 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import sunnyIcon from '@/assets/icons/meteo/sunny.png';
 import partlyCloudyIcon from '@/assets/icons/meteo/partly-cloudy.png';
 import cloudyIcon from '@/assets/icons/meteo/cloudy.png';
-import snowIcon from '@/assets/icons/meteo/snow.png';
-import rainIcon from '@/assets/icons/meteo/rain.png';
+import lightSnowIcon from '@/assets/icons/meteo/snow.png';
+import heavySnowIcon from '@/assets/icons/meteo/heavy_snow.png';
+import heavyRainIcon from '@/assets/icons/meteo/rain.png';
+import lightRainIcon from '@/assets/icons/meteo/rain.png';
 import mountainIcon from '@/assets/icons/meteo/mountain.png';
 import maxTemp from '@/assets/icons/meteo/high-temperature.png';
 import minTemp from '@/assets/icons/meteo/low-temperature.png';
@@ -23,8 +25,10 @@ const skyIcons = {
     SUNNY: sunnyIcon,
     PARTLY_CLOUDY: partlyCloudyIcon,
     CLOUDY: cloudyIcon,
-    SNOW: snowIcon,
-    RAIN: rainIcon,
+    LIGHT_SNOW: lightSnowIcon,
+    HEAVY_SNOW: heavySnowIcon,
+    LIGHT_RAIN: lightRainIcon,
+    HEAVY_RAIN: heavyRainIcon,
 };
 
 const JourneyMeteo = ({

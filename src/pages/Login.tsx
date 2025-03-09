@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
@@ -90,8 +89,7 @@ const Login = () => {
     return (
         <Card className="w-[350px]">
             <CardHeader>
-                <CardTitle className='text-xl'>Login</CardTitle>
-                <CardDescription>Allez tu peux te connecter</CardDescription>
+                <CardTitle className="text-xl">Login</CardTitle>
             </CardHeader>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <CardContent className="py-0">

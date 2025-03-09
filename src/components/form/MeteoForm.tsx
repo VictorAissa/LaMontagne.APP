@@ -1,3 +1,4 @@
+// MeteoForm.tsx modifié
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '../ui/select';
+import SkySelector from '../SkySelector';
 
 interface MeteoFormProps {
     meteo: Meteo;
@@ -29,7 +31,6 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
     date,
     coordinates,
 }) => {
-    const SKY_OPTIONS = ['SUNNY', 'PARTLY_CLOUDY', 'CLOUDY', 'SNOW', 'RAIN'];
     const WIND_DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     const BERA = ['0', '1', '2', '3', '4', '5'];
 
@@ -41,10 +42,11 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
         return difference > 0 && difference <= 7 * 24 * 60 * 60 * 1000;
     };
 
-    const handleSkyChange = (value: string) => {
+    // Modifié pour utiliser directement SkyCondition
+    const handleSkyChange = (value: SkyCondition) => {
         const updatedMeteo = new Meteo({
             ...meteo,
-            sky: value as SkyCondition,
+            sky: value,
         });
         onChange(updatedMeteo);
     };
@@ -154,6 +156,7 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
                 return;
             }
 
+            console.log('nouvelle meteo apres appel');
             const meteoData = new Meteo(response.data);
             onChange(meteoData);
         } catch (error) {
@@ -167,34 +170,10 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
             <Card className="mb-8">
                 <CardContent className="pt-6">
                     <div className="flex flex-col gap-6 mb-6">
-                        <div>
-                            <Label htmlFor="meteo-sky" className="mr-3">
-                                Ciel
-                            </Label>
-                            <Select
-                                value={meteo.sky}
-                                onValueChange={handleSkyChange}
-                            >
-                                <SelectTrigger id="meteo-sky" className="mt-2">
-                                    <SelectValue placeholder="Sélectionner les conditions" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {SKY_OPTIONS.map((option) => (
-                                        <SelectItem key={option} value={option}>
-                                            {option === 'SUNNY'
-                                                ? 'Ensoleillé'
-                                                : option === 'PARTLY_CLOUDY'
-                                                ? 'Partiellement nuageux'
-                                                : option === 'CLOUDY'
-                                                ? 'Nuageux'
-                                                : option === 'SNOW'
-                                                ? 'Neige'
-                                                : 'Pluie'}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        <SkySelector
+                            value={meteo.sky}
+                            onChange={handleSkyChange}
+                        />
 
                         <div>
                             <Label htmlFor="meteo-bera">
