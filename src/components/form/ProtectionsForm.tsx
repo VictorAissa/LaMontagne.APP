@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import SectionTitle from '@/components/SectionTitle';
@@ -16,6 +16,10 @@ const ProtectionsForm: React.FC<ProtectionsFormProps> = ({
     protections,
     onChange,
 }) => {
+    const [camsInput, setCamsInput] = useState(
+        protections.cams?.join(' ') || ''
+    );
+
     const handleRopeDiameterChange = (index: number, value: string) => {
         const diameter = parseFloat(value) || 0;
         const updatedRopes = [...protections.ropes];
@@ -83,18 +87,35 @@ const ProtectionsForm: React.FC<ProtectionsFormProps> = ({
     };
 
     const handleCamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const camsText = e.target.value;
-        const cams = camsText
-            .split(',')
-            .map((value) => parseFloat(value.trim()))
+        const rawInput = e.target.value;
+        setCamsInput(rawInput);
+
+        // Conversion en nombres seulement quand on a une valeur valide
+        const cams = rawInput
+            .split(/\s+/)
+            .map((value) => {
+                // Ne pas modifier si l'utilisateur est en train de taper un nombre décimal
+                if (value.endsWith('.')) {
+                    return NaN; // On filtrera ça
+                }
+                return parseFloat(value.trim());
+            })
             .filter((value) => !isNaN(value));
 
         const updatedProtections = new Protections({
             ...protections,
-            cams: cams.length > 0 ? cams : [0],
+            cams: cams,
         });
 
         onChange(updatedProtections);
+    };
+
+    const handleCamsBlur = () => {
+        const cleanedCams = camsInput
+            .split(/\s+/)
+            .map((v) => parseFloat(v.trim()))
+            .filter((v) => !isNaN(v));
+        setCamsInput(cleanedCams.join(' '));
     };
 
     const handleScrewsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,15 +226,16 @@ const ProtectionsForm: React.FC<ProtectionsFormProps> = ({
                         </div>
                         <div>
                             <Label htmlFor="cams">
-                                Friends (tailles, séparées par des virgules)
+                                Friends (tailles, séparées par des espaces)
                             </Label>
                             <Input
                                 id="cams"
                                 name="cams"
-                                value={protections.cams?.join(', ') || ''}
+                                value={camsInput}
                                 onChange={handleCamsChange}
-                                placeholder="1.5, 3, 3"
+                                placeholder="1.2 2.3 3.4"
                                 className="mt-2"
+                                onBlur={handleCamsBlur}
                             />
                         </div>
                         <div>
@@ -226,7 +248,7 @@ const ProtectionsForm: React.FC<ProtectionsFormProps> = ({
                                 name="protections.screws"
                                 value={protections.screws || ''}
                                 onChange={handleScrewsChange}
-                                placeholder="5"
+                                placeholder="0"
                                 className="mt-2"
                             />
                         </div>

@@ -53,32 +53,40 @@ const Journeys = () => {
         }
     }, [API_URL, dispatch, userId]);
 
+    if (status === 'loading') {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                Chargement...
+            </div>
+        );
+    }
+
+    if (status === 'failed') {
+        return (
+            <div className="flex justify-center items-center h-screen text-red-500">
+                Erreur{error && `: ${error}`}
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto">
             <div className="flex flex-col gap-6">
                 <JourneyFiltersProps />
 
-                {status === 'loading' ? (
-                    <div>Chargement...</div>
-                ) : status === 'failed' ? (
-                    <div className="text-red-500">
-                        Erreur{error && `: ${error}`}
-                    </div>
-                ) : (
-                    <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 px-6 [column-fill:_balance] space-y-4">
-                        {filteredJourneys.map((journey, index) => (
-                            <div
-                                key={journey?.id}
-                                className="break-inside-avoid mb-4"
-                            >
-                                <JourneyCard
-                                    index={index}
-                                    journey={journey || new Journey()}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 px-6 [column-fill:_balance] space-y-4">
+                    {filteredJourneys.map((journey, index) => (
+                        <div
+                            key={journey?.id}
+                            className="break-inside-avoid mb-4"
+                        >
+                            <JourneyCard
+                                index={index}
+                                journey={journey || new Journey()}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

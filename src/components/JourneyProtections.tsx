@@ -15,7 +15,7 @@ const JourneyProtections = ({ protections }: ProtectionsSectionProps) => {
                 {/* Ropes */}
                 <div className="flex flex-col items-center gap-2">
                     <div className="flex flex-col items-center">
-                        <img src={rope} alt="Rope" className="h-8 w-8" />
+                        <img src={rope} alt="Rope" className="h-12 w-12" />
                     </div>
                     <div className="text-center">
                         {protections.ropes.map((rope, index) => (
@@ -32,7 +32,7 @@ const JourneyProtections = ({ protections }: ProtectionsSectionProps) => {
                 {/* Cams */}
                 <div className="flex flex-col items-center gap-2">
                     <div className="flex flex-col items-center">
-                        <img src={friend} alt="Friend" className="h-8 w-8" />
+                        <img src={friend} alt="Friend" className="h-12 w-12" />
                     </div>
                     <div className="text-center">
                         {protections.cams.map((size, index) => (
@@ -48,7 +48,7 @@ const JourneyProtections = ({ protections }: ProtectionsSectionProps) => {
 
                 {/* Nuts */}
                 <div className="flex flex-col items-center gap-2">
-                    <img src={stopper} alt="Stopper" className="h-8 w-8" />
+                    <img src={stopper} alt="Stopper" className="h-12 w-12" />
                     <span className="text-sm">
                         {protections.nuts}{' '}
                         {protections.nuts > 1 ? 'stoppers' : 'stopper'}
@@ -57,7 +57,7 @@ const JourneyProtections = ({ protections }: ProtectionsSectionProps) => {
 
                 {/* Ice Screws */}
                 <div className="flex flex-col items-center gap-2">
-                    <img src={screw} alt="Ice screw" className="h-8 w-8" />
+                    <img src={screw} alt="Ice screw" className="h-12 w-12" />
                     <span className="text-sm">
                         {protections.screws}{' '}
                         {protections.screws > 1 ? 'broches' : 'broche'}

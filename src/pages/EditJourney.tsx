@@ -27,14 +27,22 @@ import {
 } from '@/components/ui/select';
 import ProtectionsForm from '@/components/form/ProtectionsForm';
 import { Protections } from '@/types/Protection';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const EditJourney = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
+    const [isFetchLoading, setIsFetchLoading] = useState(true);
+    const [fetchingJourneyError, setFetchingJourneyError] =
+        useState<string>('');
+    const [isValidationLoading, setIsValidationLoading] =
+        useState<boolean>(false);
+    const [validationError, setValidationError] = useState<string>('');
+
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [journey, setJourney] = useState<Journey>(new Journey());
 
     const SEASONS = ['SUMMER', 'WINTER'];
@@ -45,28 +53,22 @@ const EditJourney = () => {
     );
 
     useEffect(() => {
-        console.log(selectedFiles);
-    }, [selectedFiles]);
-
-    useEffect(() => {
         if (id && !journeyFromStore) {
+            setFetchingJourneyError('');
             dispatch(fetchJourneyById(id))
                 .unwrap()
-                .then(() => setIsLoading(false))
+                .then(() => setIsFetchLoading(false))
                 .catch((error) => {
-                    console.error(
-                        'Erreur lors du chargement de la course:',
-                        error
-                    );
-                    setIsLoading(false);
+                    setFetchingJourneyError(error);
+                    setIsFetchLoading(false);
                 });
         } else {
-            setIsLoading(false);
+            setIsFetchLoading(false);
         }
     }, [id, dispatch, journeyFromStore]);
 
     useEffect(() => {
-        if (journeyFromStore && isLoading) {
+        if (journeyFromStore && isFetchLoading) {
             setJourney(new Journey(journeyFromStore));
         }
     }, [journeyFromStore]);
@@ -74,6 +76,10 @@ const EditJourney = () => {
     useEffect(() => {
         console.log(journey);
     }, [journey]);
+
+    useEffect(() => {
+        console.log(selectedFiles);
+    }, [selectedFiles]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setJourney((current) => {
@@ -164,6 +170,8 @@ const EditJourney = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsValidationLoading(true);
+        setValidationError('');
 
         try {
             if (isNewJourney) {
@@ -183,8 +191,14 @@ const EditJourney = () => {
             }
 
             navigate('/journeys');
-        } catch (error) {
-            console.error('Échec de la sauvegarde de la course:', error);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                setValidationError(error.message);
+            } else {
+                setValidationError(String(error));
+            }
+        } finally {
+            setIsValidationLoading(false);
         }
     };
 
@@ -192,11 +206,22 @@ const EditJourney = () => {
         navigate('/journeys');
     };
 
-    if (isLoading) {
+    if (isFetchLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 Chargement...
             </div>
+        );
+    }
+
+    if (!isFetchLoading && fetchingJourneyError) {
+        return (
+            <Alert variant="destructive" className="my-4 mx-6 w-auto">
+                <AlertDescription>
+                    Erreur pendant la récupération de la course :{' '}
+                    {fetchingJourneyError}
+                </AlertDescription>
+            </Alert>
         );
     }
 
@@ -335,19 +360,25 @@ const EditJourney = () => {
 
             {/* Boutons d'action */}
             <div className="flex justify-end gap-4 mt-8">
-                <button
+                {!isValidationLoading && validationError && (
+                    <Alert className="mx-6 w-auto text-red-500">
+                        <AlertDescription>
+                            Il y a eu une erreur à l'enregistrement :{' '}
+                            {validationError}
+                        </AlertDescription>
+                    </Alert>
+                )}
+                <Button
                     type="button"
+                    variant="secondary"
+                    disabled={isValidationLoading}
                     onClick={handleCancel}
-                    className="px-4 py-2 border rounded"
                 >
                     Annuler
-                </button>
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                    Sauvegarder
-                </button>
+                </Button>
+                <Button type="submit" disabled={isValidationLoading}>
+                    {isValidationLoading ? 'Sauvegarder...' : 'Sauvegarder'}
+                </Button>
             </div>
         </form>
     );
