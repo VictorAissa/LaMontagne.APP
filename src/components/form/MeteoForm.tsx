@@ -1,5 +1,5 @@
 // MeteoForm.tsx modifié
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import SectionTitle from '@/components/SectionTitle';
@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from '../ui/select';
 import SkySelector from '../SkySelector';
+import { Alert, AlertDescription } from '../ui/alert';
 
 interface MeteoFormProps {
     meteo: Meteo;
@@ -33,6 +34,8 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
 }) => {
     const WIND_DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
     const BERA = ['0', '1', '2', '3', '4', '5'];
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
     const canRequestMeteo = () => {
         if (!date) return false;
@@ -42,7 +45,6 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
         return difference > 0 && difference <= 7 * 24 * 60 * 60 * 1000;
     };
 
-    // Modifié pour utiliser directement SkyCondition
     const handleSkyChange = (value: SkyCondition) => {
         const updatedMeteo = new Meteo({
             ...meteo,
@@ -137,6 +139,9 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
                 return;
             }
 
+            setIsLoading(true);
+            setError(null);
+
             const formattedDate =
                 date instanceof Date
                     ? date.toISOString().split('T')[0]
@@ -149,18 +154,16 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
             );
 
             if (response.error) {
-                console.error(
-                    'Erreur lors de la récupération des données météo:',
-                    response.error
-                );
-                return;
+                throw new Error(response.error);
             }
 
-            console.log('nouvelle meteo apres appel');
             const meteoData = new Meteo(response.data);
             onChange(meteoData);
         } catch (error) {
+            setError('Erreur pendant la récupération des données météo');
             console.error('Exception lors de la requête météo:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -335,12 +338,23 @@ const MeteoForm: React.FC<MeteoFormProps> = ({
                                 variant="outline"
                                 onClick={handleGetMeteo}
                                 className="flex items-center gap-2"
+                                disabled={isLoading}
                             >
                                 <RefreshCw size={16} />
-                                Mettre à jour la météo
+                                {isLoading
+                                    ? 'Mettre à jour...'
+                                    : 'Mettre à jour'}
                             </Button>
                         )}
                     </div>
+                    {!isLoading && error && (
+                        <Alert
+                            variant="destructive"
+                            className="my-4 mx-6 w-auto"
+                        >
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
                 </CardContent>
             </Card>
         </>

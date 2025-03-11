@@ -45,6 +45,10 @@ const EditJourney = () => {
     );
 
     useEffect(() => {
+        console.log(selectedFiles);
+    }, [selectedFiles]);
+
+    useEffect(() => {
         if (id && !journeyFromStore) {
             dispatch(fetchJourneyById(id))
                 .unwrap()
@@ -112,7 +116,7 @@ const EditJourney = () => {
     };
 
     const handleFilesChange = (files: File[]) => {
-        setSelectedFiles(files);
+        setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
     };
 
     const handleItineraryChange = (itinerary: Itinerary) => {
@@ -292,6 +296,7 @@ const EditJourney = () => {
             <ItineraryForm
                 itinerary={journey.itinerary}
                 onChange={handleItineraryChange}
+                onFilesChange={handleFilesChange}
             />
 
             <AltitudesForm
