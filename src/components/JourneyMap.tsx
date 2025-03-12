@@ -22,11 +22,37 @@ interface Props {
     start?: GeoPoint;
     end?: GeoPoint;
     gpxUrl?: string;
+    onStartChange?: (point: GeoPoint) => void;
+    onEndChange?: (point: GeoPoint) => void;
+    isEditable?: boolean;
 }
 
-const JourneyMap = ({ start, end, gpxUrl }: Props) => {
-    const [geoJsonData, setGeoJsonData] = useState<any>(null);
-    const defaultCenter: [number, number] = [45.900002, 6.11667];
+function DraggableMarkers({
+    start,
+    end,
+    onStartChange,
+    onEndChange,
+    isEditable = false,
+}: Props) {
+    const handleStartDragEnd = (e: L.DragEndEvent) => {
+        const { lat, lng } = e.target.getLatLng();
+        if (onStartChange) {
+            onStartChange({
+                latitude: lat,
+                longitude: lng,
+            });
+        }
+    };
+
+    const handleEndDragEnd = (e: L.DragEndEvent) => {
+        const { lat, lng } = e.target.getLatLng();
+        if (onEndChange) {
+            onEndChange({
+                latitude: lat,
+                longitude: lng,
+            });
+        }
+    };
 
     const customStartIcon = new L.Icon({
         iconUrl: startIcon,
@@ -42,6 +68,60 @@ const JourneyMap = ({ start, end, gpxUrl }: Props) => {
         popupAnchor: [0, -34],
     });
 
+    const toLeafletLatLng = (point?: GeoPoint): [number, number] => {
+        if (
+            !point?.latitude ||
+            !point?.longitude ||
+            isNaN(point.latitude) ||
+            isNaN(point.longitude)
+        ) {
+            return [45.900002, 6.11667]; // Default center
+        }
+        return [point.latitude, point.longitude];
+    };
+
+    return (
+        <>
+            {start && (
+                <Marker
+                    position={toLeafletLatLng(start)}
+                    icon={customStartIcon}
+                    draggable={isEditable}
+                    eventHandlers={{
+                        dragend: handleStartDragEnd,
+                    }}
+                >
+                    <Popup>Départ {isEditable ? '(déplaçable)' : ''}</Popup>
+                </Marker>
+            )}
+            {end && (
+                <Marker
+                    position={toLeafletLatLng(end)}
+                    icon={customEndIcon}
+                    draggable={isEditable}
+                    eventHandlers={{
+                        dragend: handleEndDragEnd,
+                    }}
+                >
+                    <Popup>Arrivée {isEditable ? '(déplaçable)' : ''}</Popup>
+                </Marker>
+            )}
+        </>
+    );
+}
+
+const JourneyMap = ({
+    start,
+    end,
+    gpxUrl,
+    onStartChange,
+    onEndChange,
+    isEditable = false,
+}: Props) => {
+    const [geoJsonData, setGeoJsonData] = useState<any>(null);
+    const defaultCenter: [number, number] = [45.900002, 6.11667];
+
+    // Convert GeoPoint to Leaflet LatLng for map center
     const toLeafletLatLng = (point?: GeoPoint): [number, number] => {
         if (
             !point?.latitude ||
@@ -79,13 +159,10 @@ const JourneyMap = ({ start, end, gpxUrl }: Props) => {
         }
     }, [gpxUrl]);
 
+    const mapCenter = start ? toLeafletLatLng(start) : defaultCenter;
+
     return (
-        <MapContainer
-            center={toLeafletLatLng(start)}
-            zoom={13}
-            className="h-full w-full"
-            //scrollWheelZoom={isLargeScreen}
-        >
+        <MapContainer center={mapCenter} zoom={13} className="h-full w-full">
             <LayersControl position="topright">
                 {/* OpenTopoMap */}
                 <LayersControl.BaseLayer checked name="OpenTopo">
@@ -132,19 +209,13 @@ const JourneyMap = ({ start, end, gpxUrl }: Props) => {
                 </LayersControl.BaseLayer>
             </LayersControl>
 
-            {start && (
-                <Marker
-                    position={toLeafletLatLng(start)}
-                    icon={customStartIcon}
-                >
-                    <Popup>Départ</Popup>
-                </Marker>
-            )}
-            {end && (
-                <Marker position={toLeafletLatLng(end)} icon={customEndIcon}>
-                    <Popup>Arrivée</Popup>
-                </Marker>
-            )}
+            <DraggableMarkers
+                start={start}
+                end={end}
+                onStartChange={onStartChange}
+                onEndChange={onEndChange}
+                isEditable={isEditable}
+            />
 
             {geoJsonData && <GeoJSON data={geoJsonData} style={geoJsonStyle} />}
         </MapContainer>

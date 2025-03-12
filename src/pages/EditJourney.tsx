@@ -77,10 +77,6 @@ const EditJourney = () => {
         console.log(journey);
     }, [journey]);
 
-    useEffect(() => {
-        console.log(selectedFiles);
-    }, [selectedFiles]);
-
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setJourney((current) => {
             const updated = new Journey(current);

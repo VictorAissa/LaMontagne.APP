@@ -5,7 +5,7 @@ import SectionTitle from '@/components/SectionTitle';
 import JourneyMap from '@/components/JourneyMap';
 import { Itinerary } from '@/types/Topo';
 import { Label } from '@radix-ui/react-label';
-import { Trash2, FileCheck, Map } from 'lucide-react';
+import { Trash2, FileCheck, Map, MousePointer } from 'lucide-react';
 
 interface ItineraryFormProps {
     itinerary: Itinerary;
@@ -71,6 +71,34 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
         onChange(updatedItinerary);
     };
 
+    const handleStartChangeFromMap = (point: {
+        latitude: number;
+        longitude: number;
+    }) => {
+        const updatedItinerary = new Itinerary({
+            ...itinerary,
+            start: {
+                latitude: point.latitude,
+                longitude: point.longitude,
+            },
+        });
+        onChange(updatedItinerary);
+    };
+
+    const handleEndChangeFromMap = (point: {
+        latitude: number;
+        longitude: number;
+    }) => {
+        const updatedItinerary = new Itinerary({
+            ...itinerary,
+            end: {
+                latitude: point.latitude,
+                longitude: point.longitude,
+            },
+        });
+        onChange(updatedItinerary);
+    };
+
     const handleGpxFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
@@ -79,7 +107,7 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
             const updatedFiles = [...selectedFiles, file];
             setSelectedFiles(updatedFiles);
 
-            // Créer une URL temporaire pour la prévisualisation
+            // Create temporary URL for preview
             const gpxPreviewUrl = URL.createObjectURL(file);
             setPreviewUrl(gpxPreviewUrl);
 
@@ -89,7 +117,7 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
                 fileInputRef.current.value = '';
             }
 
-            // Simuler un délai de chargement pour l'aperçu
+            // Simulate loading delay for preview
             setTimeout(() => {
                 setIsLoading(false);
             }, 500);
@@ -107,7 +135,6 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
         onFilesChange([]);
     };
 
-    // Nettoyage de l'URL lors du démontage du composant
     useEffect(() => {
         return () => {
             if (previewUrl) {
@@ -236,10 +263,23 @@ const ItineraryForm: React.FC<ItineraryFormProps> = ({
                     </div>
 
                     <div className="w-full h-[400px] rounded-md overflow-hidden relative">
+                        <div className="absolute top-2 left-2 z-10 bg-white bg-opacity-80 rounded-md p-2 shadow-sm">
+                            <div className="flex items-center gap-2 text-xs font-medium">
+                                <MousePointer
+                                    size={14}
+                                    className="text-blue-600"
+                                />
+                                <span>Marqueurs déplaçables sur la carte</span>
+                            </div>
+                        </div>
+
                         <JourneyMap
                             start={itinerary.start}
                             end={itinerary.end}
-                            gpxUrl={previewUrl}
+                            gpxUrl={itinerary.gpx}
+                            onStartChange={handleStartChangeFromMap}
+                            onEndChange={handleEndChangeFromMap}
+                            isEditable={true}
                         />
 
                         {isLoading && (
