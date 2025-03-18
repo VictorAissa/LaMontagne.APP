@@ -53,6 +53,7 @@ const EditJourney = () => {
     );
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         if (id && !journeyFromStore) {
             setFetchingJourneyError('');
             dispatch(fetchJourneyById(id))
@@ -72,10 +73,6 @@ const EditJourney = () => {
             setJourney(new Journey(journeyFromStore));
         }
     }, [journeyFromStore]);
-
-    useEffect(() => {
-        console.log(journey);
-    }, [journey]);
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setJourney((current) => {
