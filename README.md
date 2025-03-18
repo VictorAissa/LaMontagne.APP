@@ -1,50 +1,36 @@
-# React + TypeScript + Vite
+# LaMontagne
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small application for creating a directory of completed or planned routes in the mountains.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Requirements
 
-## Expanding the ESLint configuration
+Node >20 is ok.  
+Npm or yarn.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Run in dev mode
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+yarn
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+yarn run dev
 ```
+
+## Instructions of Use
+
+### Consultation Mode
+- The landing page is the connection page, or the home page if you are already connected.
+- The home page displays all available mountain routes for the connected user.
+- You can filter routes by period or season.
+- You can add a new route using the menu.
+- By clicking on a route, you can access its details and edit it.
+
+### Edit Mode
+- In edit mode, if the route is planned in the future and within 7 days, you can automatically obtain weather forecasts from MeteoBlue for the day of the route.
+- If the route is planned within 2 days (or the day before before 4 PM), you can obtain the BERA avalanche risk index for the day of the route.
+- ⚠️ **WARNING:** A BERA index of 0 does not exist. If the value displayed is 0, it means the information is not available. Do not interpret this as "no risk"!
+- You can move the departure or arrival points directly on the map or set their coordinates in the designated fields.
+- You can load a GPX file, add or delete photos.
