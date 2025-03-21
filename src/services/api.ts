@@ -40,9 +40,18 @@ export class ApiService {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const data = await response.json();
-            return { data };
+            
+            // Check if the response has content before parsing
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json') && response.status !== 204) {
+                const text = await response.text();
+                // Only parse if there's actually content to parse
+                const data = text.length > 0 ? JSON.parse(text) : null;
+                return { data };
+            }
+            
+            // For empty responses (like many DELETE operations) just return success with null data
+            return { data: null as T };
         } catch (error) {
             return {
                 data: null as T,

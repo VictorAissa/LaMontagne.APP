@@ -29,6 +29,7 @@ import ProtectionsForm from '@/components/form/ProtectionsForm';
 import { Protections } from '@/types/Protection';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import DeleteDialog from '@/components/DeleteDialog';
 
 const EditJourney = () => {
     const dispatch = useAppDispatch();
@@ -352,27 +353,30 @@ const EditJourney = () => {
             </Card>
 
             {/* Boutons d'action */}
-            <div className="flex justify-end gap-4 mt-8">
-                {!isValidationLoading && validationError && (
-                    <Alert className="mx-6 w-auto text-red-500">
-                        <AlertDescription>
-                            Il y a eu une erreur à l'enregistrement :{' '}
-                            {validationError}
-                        </AlertDescription>
-                    </Alert>
-                )}
-                <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={isValidationLoading}
-                    onClick={handleCancel}
-                >
-                    Annuler
-                </Button>
-                <Button type="submit" disabled={isValidationLoading}>
-                    {isValidationLoading ? 'Sauvegarder...' : 'Sauvegarder'}
-                </Button>
+            <div className="flex justify-between  mt-8">
+                <DeleteDialog journeyId={journey.id} />
+                <div className="flex gap-4">
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        disabled={isValidationLoading}
+                        onClick={handleCancel}
+                    >
+                        Annuler
+                    </Button>
+                    <Button type="submit" disabled={isValidationLoading}>
+                        {isValidationLoading ? 'Sauvegarder...' : 'Sauvegarder'}
+                    </Button>
+                </div>
             </div>
+            {!isValidationLoading && validationError && (
+                <Alert className="mx-6 w-auto text-red-500">
+                    <AlertDescription>
+                        Il y a eu une erreur à l'enregistrement :{' '}
+                        {validationError}
+                    </AlertDescription>
+                </Alert>
+            )}
         </form>
     );
 };

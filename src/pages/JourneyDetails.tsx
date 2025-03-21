@@ -44,10 +44,6 @@ const JourneyDetails = () => {
         }
     }, [id]);
 
-    useEffect(() => {
-        console.log(journey);
-    }, [journey]);
-
     return (
         <div className="flex flex-col w-full px-6 md:px-12 lg:px-24">
             <div className="flex flex-col h-60 justify-center gap-10 md:gap-14 ">
